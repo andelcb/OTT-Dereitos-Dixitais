@@ -1,0 +1,3220 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GDR — Gestión de Derechos Digitales OTT</title>
+<style>
+/* ===== VARIABLES Y RESET ===== */
+:root {
+  --primary: #008c9f;
+  --primary-dark: #006e7e;
+  --primary-light: #e0f4f7;
+  --primary-mid: #b3e2ea;
+  --accent: #005f6b;
+  --bg: #f4f6f8;
+  --bg-white: #ffffff;
+  --sidebar-bg: #1a2b30;
+  --sidebar-text: #c8d8db;
+  --sidebar-active: #008c9f;
+  --text-main: #1e2d30;
+  --text-secondary: #5a6e73;
+  --text-muted: #8fa3a8;
+  --border: #dce6e8;
+  --border-light: #edf2f3;
+  --danger: #c0392b;
+  --danger-light: #fdecea;
+  --warning: #d68910;
+  --warning-light: #fdf6e3;
+  --success: #1e8449;
+  --success-light: #eafaf1;
+  --info: #1a6e85;
+  --info-light: #e8f4f8;
+  --neutral: #607d8b;
+  --neutral-light: #f0f4f5;
+  --shadow-sm: 0 1px 3px rgba(0,0,0,0.08);
+  --shadow: 0 2px 8px rgba(0,0,0,0.10);
+  --shadow-md: 0 4px 16px rgba(0,0,0,0.12);
+  --radius: 6px;
+  --radius-sm: 4px;
+  --font: 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+  --sidebar-width: 230px;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { height: 100%; }
+body {
+  font-family: var(--font);
+  background: var(--bg);
+  color: var(--text-main);
+  font-size: 14px;
+  line-height: 1.5;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ===== TOPBAR ===== */
+#topbar {
+  height: 52px;
+  background: var(--sidebar-bg);
+  display: flex;
+  align-items: center;
+  padding: 0 20px;
+  gap: 16px;
+  flex-shrink: 0;
+  z-index: 100;
+  border-bottom: 2px solid var(--primary);
+}
+#topbar .logo {
+  font-size: 15px;
+  font-weight: 700;
+  color: #fff;
+  letter-spacing: 0.04em;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+#topbar .logo-badge {
+  background: var(--primary);
+  color: #fff;
+  font-size: 10px;
+  font-weight: 700;
+  padding: 2px 7px;
+  border-radius: 3px;
+  letter-spacing: 0.06em;
+}
+#topbar .spacer { flex: 1; }
+#topbar .topbar-meta {
+  font-size: 12px;
+  color: var(--sidebar-text);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* ===== PROFILE SWITCHER ===== */
+#profile-switcher {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+#profile-switcher label {
+  font-size: 11px;
+  color: var(--sidebar-text);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+#profile-select {
+  background: #2a3d42;
+  border: 1px solid #3d5560;
+  color: #fff;
+  font-size: 12px;
+  padding: 5px 10px;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  outline: none;
+  font-family: var(--font);
+}
+#profile-select:focus { border-color: var(--primary); }
+
+/* ===== LAYOUT ===== */
+#app-body {
+  display: flex;
+  flex: 1;
+  overflow: hidden;
+}
+
+/* ===== SIDEBAR ===== */
+#sidebar {
+  width: var(--sidebar-width);
+  background: var(--sidebar-bg);
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+  overflow-y: auto;
+  padding: 16px 0 24px;
+}
+.sidebar-section-label {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.10em;
+  text-transform: uppercase;
+  color: #4a6368;
+  padding: 14px 20px 6px;
+}
+.sidebar-link {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 20px;
+  color: var(--sidebar-text);
+  cursor: pointer;
+  font-size: 13px;
+  border-left: 3px solid transparent;
+  transition: background 0.15s, color 0.15s;
+  user-select: none;
+}
+.sidebar-link:hover {
+  background: rgba(0,140,159,0.12);
+  color: #fff;
+}
+.sidebar-link.active {
+  background: rgba(0,140,159,0.18);
+  color: #fff;
+  border-left-color: var(--primary);
+  font-weight: 600;
+}
+.sidebar-link .icon {
+  font-size: 15px;
+  opacity: 0.85;
+  width: 18px;
+  text-align: center;
+}
+.sidebar-link .badge-count {
+  margin-left: auto;
+  background: var(--danger);
+  color: #fff;
+  font-size: 10px;
+  font-weight: 700;
+  padding: 1px 6px;
+  border-radius: 10px;
+}
+
+/* ===== MAIN CONTENT ===== */
+#main-content {
+  flex: 1;
+  overflow-y: auto;
+  padding: 24px 28px;
+}
+
+/* ===== PAGE HEADER ===== */
+.page-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: 22px;
+  gap: 16px;
+}
+.page-header h1 {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--text-main);
+  letter-spacing: -0.01em;
+}
+.page-header p {
+  font-size: 13px;
+  color: var(--text-secondary);
+  margin-top: 3px;
+}
+
+/* ===== CARDS / PANELS ===== */
+.card {
+  background: var(--bg-white);
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-sm);
+  margin-bottom: 20px;
+}
+.card-header {
+  padding: 14px 20px;
+  border-bottom: 1px solid var(--border-light);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+.card-header h3 {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text-main);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.card-body { padding: 18px 20px; }
+
+/* ===== KPI GRID ===== */
+.kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 16px;
+  margin-bottom: 22px;
+}
+.kpi-card {
+  background: var(--bg-white);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 18px 20px;
+  box-shadow: var(--shadow-sm);
+  position: relative;
+  overflow: hidden;
+}
+.kpi-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 3px;
+}
+.kpi-card.type-primary::before { background: var(--primary); }
+.kpi-card.type-warning::before { background: var(--warning); }
+.kpi-card.type-danger::before { background: var(--danger); }
+.kpi-card.type-success::before { background: var(--success); }
+.kpi-card.type-neutral::before { background: var(--neutral); }
+.kpi-label {
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  color: var(--text-secondary);
+  margin-bottom: 8px;
+}
+.kpi-value {
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--text-main);
+  line-height: 1;
+}
+.kpi-sub {
+  font-size: 11px;
+  color: var(--text-muted);
+  margin-top: 5px;
+}
+
+/* ===== BADGES / STATUS ===== */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 11px;
+  font-weight: 600;
+  padding: 3px 8px;
+  border-radius: 3px;
+  white-space: nowrap;
+  letter-spacing: 0.02em;
+}
+.badge-success { background: var(--success-light); color: var(--success); }
+.badge-danger { background: var(--danger-light); color: var(--danger); }
+.badge-warning { background: var(--warning-light); color: var(--warning); }
+.badge-info { background: var(--info-light); color: var(--info); }
+.badge-neutral { background: var(--neutral-light); color: var(--neutral); }
+.badge-primary { background: var(--primary-light); color: var(--primary-dark); }
+.badge::before { font-size: 8px; }
+
+/* ===== TABLES ===== */
+.table-wrapper { overflow-x: auto; }
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+thead th {
+  text-align: left;
+  padding: 10px 14px;
+  background: #f8fafb;
+  border-bottom: 2px solid var(--border);
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text-secondary);
+  white-space: nowrap;
+}
+tbody tr {
+  border-bottom: 1px solid var(--border-light);
+  transition: background 0.1s;
+}
+tbody tr:hover { background: #f5fafb; }
+tbody td {
+  padding: 11px 14px;
+  color: var(--text-main);
+  vertical-align: middle;
+}
+tbody td.muted { color: var(--text-secondary); font-size: 12px; }
+.link-cell {
+  color: var(--primary-dark);
+  font-weight: 600;
+  cursor: pointer;
+  text-decoration: none;
+}
+.link-cell:hover { text-decoration: underline; color: var(--primary); }
+
+/* ===== FILTERS BAR ===== */
+.filters-bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  padding: 14px 20px;
+  background: #f8fafb;
+  border-bottom: 1px solid var(--border-light);
+}
+.filters-bar input, .filters-bar select {
+  background: var(--bg-white);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 7px 11px;
+  font-size: 13px;
+  font-family: var(--font);
+  color: var(--text-main);
+  outline: none;
+  transition: border-color 0.15s;
+}
+.filters-bar input:focus, .filters-bar select:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 2px rgba(0,140,159,0.12);
+}
+.filters-bar input { min-width: 220px; }
+.filters-bar select { min-width: 140px; }
+
+/* ===== BUTTONS ===== */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px;
+  border-radius: var(--radius-sm);
+  font-size: 13px;
+  font-weight: 600;
+  font-family: var(--font);
+  cursor: pointer;
+  border: none;
+  transition: background 0.15s, opacity 0.15s;
+  text-decoration: none;
+}
+.btn-primary { background: var(--primary); color: #fff; }
+.btn-primary:hover { background: var(--primary-dark); }
+.btn-secondary { background: var(--bg-white); color: var(--text-main); border: 1px solid var(--border); }
+.btn-secondary:hover { background: var(--bg); border-color: var(--primary); }
+.btn-danger { background: var(--danger); color: #fff; }
+.btn-danger:hover { opacity: 0.9; }
+.btn-success { background: var(--success); color: #fff; }
+.btn-success:hover { opacity: 0.9; }
+.btn-sm { padding: 5px 11px; font-size: 12px; }
+.btn:disabled { opacity: 0.45; cursor: not-allowed; }
+
+/* ===== DETAIL / TABS ===== */
+.tab-nav {
+  display: flex;
+  gap: 0;
+  border-bottom: 2px solid var(--border);
+  padding: 0 20px;
+  background: var(--bg-white);
+  overflow-x: auto;
+}
+.tab-btn {
+  padding: 12px 18px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -2px;
+  transition: color 0.15s;
+  white-space: nowrap;
+  user-select: none;
+  background: none;
+  border-top: none; border-left: none; border-right: none;
+  font-family: var(--font);
+}
+.tab-btn:hover { color: var(--primary); }
+.tab-btn.active { color: var(--primary); border-bottom-color: var(--primary); }
+.tab-panel { display: none; padding: 22px 20px; }
+.tab-panel.active { display: block; }
+
+/* ===== FORM FIELDS ===== */
+.field-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 18px;
+}
+.field-group { display: flex; flex-direction: column; gap: 5px; }
+.field-label {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  color: var(--text-secondary);
+}
+.field-value {
+  font-size: 14px;
+  color: var(--text-main);
+  padding: 7px 0;
+  border-bottom: 1px solid var(--border-light);
+  min-height: 32px;
+}
+.field-value.editable {
+  background: var(--bg-white);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 7px 11px;
+  font-family: var(--font);
+  font-size: 13px;
+  color: var(--text-main);
+  outline: none;
+  width: 100%;
+  transition: border-color 0.15s;
+}
+.field-value.editable:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 2px rgba(0,140,159,0.12);
+}
+.field-value.locked {
+  background: #f5f7f8;
+  color: var(--text-muted);
+  font-style: italic;
+  font-size: 12px;
+}
+
+/* ===== SECTION DIVIDERS ===== */
+.section-title {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--primary-dark);
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  padding-bottom: 8px;
+  border-bottom: 2px solid var(--primary-light);
+  margin-bottom: 18px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* ===== ALERTS ===== */
+.alert-list { display: flex; flex-direction: column; gap: 10px; }
+.alert-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 12px 16px;
+  border-radius: var(--radius-sm);
+  border-left: 4px solid;
+}
+.alert-item.danger { background: var(--danger-light); border-color: var(--danger); }
+.alert-item.warning { background: var(--warning-light); border-color: var(--warning); }
+.alert-item.info { background: var(--info-light); border-color: var(--info); }
+.alert-icon { font-size: 16px; margin-top: 1px; flex-shrink: 0; }
+.alert-body { flex: 1; }
+.alert-title { font-size: 13px; font-weight: 700; margin-bottom: 2px; }
+.alert-desc { font-size: 12px; color: var(--text-secondary); }
+.alert-meta { font-size: 11px; color: var(--text-muted); margin-top: 4px; }
+
+/* ===== PUBLICATION PANEL ===== */
+.pub-checklist {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 12px;
+  margin-bottom: 16px;
+}
+.pub-check-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 16px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+  background: var(--bg-white);
+}
+.pub-check-icon { font-size: 18px; flex-shrink: 0; }
+.pub-check-label { font-size: 12px; font-weight: 600; color: var(--text-secondary); }
+.pub-check-val { font-size: 13px; font-weight: 700; color: var(--text-main); margin-top: 1px; }
+
+/* ===== TRAFFIC LIGHT ===== */
+.semaforo {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 16px 20px;
+  border-radius: var(--radius);
+  margin-bottom: 16px;
+  font-size: 15px;
+  font-weight: 700;
+}
+.semaforo.verde { background: var(--success-light); color: var(--success); border: 2px solid var(--success); }
+.semaforo.rojo { background: var(--danger-light); color: var(--danger); border: 2px solid var(--danger); }
+.semaforo.naranja { background: var(--warning-light); color: var(--warning); border: 2px solid var(--warning); }
+.semaforo-icon { font-size: 26px; }
+
+/* ===== PROFILES PAGE ===== */
+.profiles-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 20px;
+}
+.profile-card {
+  background: var(--bg-white);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-sm);
+  overflow: hidden;
+}
+.profile-header {
+  padding: 16px 20px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.profile-icon {
+  width: 40px; height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  flex-shrink: 0;
+}
+.profile-card.derechos .profile-icon { background: var(--primary-light); }
+.profile-card.administracion .profile-icon { background: #e8f4e8; }
+.profile-card.publicacion .profile-icon { background: #fdf6e3; }
+.profile-name { font-size: 15px; font-weight: 700; color: var(--text-main); }
+.profile-desc { font-size: 12px; color: var(--text-secondary); }
+.profile-perms { padding: 0 20px 16px; }
+.perm-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 0;
+  font-size: 12px;
+  color: var(--text-secondary);
+  border-bottom: 1px solid var(--border-light);
+}
+.perm-item:last-child { border-bottom: none; }
+.perm-ok { color: var(--success); font-size: 13px; }
+.perm-no { color: var(--danger); font-size: 13px; }
+.perm-limited { color: var(--warning); font-size: 13px; }
+
+/* ===== TOASTS ===== */
+#toast-container {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.toast {
+  background: #1a2b30;
+  color: #fff;
+  padding: 12px 18px;
+  border-radius: var(--radius);
+  font-size: 13px;
+  box-shadow: var(--shadow-md);
+  border-left: 4px solid var(--primary);
+  max-width: 320px;
+  animation: slideIn 0.2s ease;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.toast.success { border-left-color: var(--success); }
+.toast.warning { border-left-color: var(--warning); }
+.toast.danger { border-left-color: var(--danger); }
+@keyframes slideIn { from { transform: translateX(20px); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+
+/* ===== HIDDEN / UTILITY ===== */
+.hidden { display: none !important; }
+.mt-4 { margin-top: 4px; }
+.mt-8 { margin-top: 8px; }
+.mt-16 { margin-top: 16px; }
+.mb-8 { margin-bottom: 8px; }
+.text-right { text-align: right; }
+.flex-row { display: flex; align-items: center; gap: 10px; }
+.flex-between { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+
+/* ===== RESTRICTED BLOCK ===== */
+.restricted-block {
+  background: #f8fafb;
+  border: 1px dashed var(--border);
+  border-radius: var(--radius-sm);
+  padding: 16px 20px;
+  color: var(--text-muted);
+  font-size: 12px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 8px 0;
+}
+.restricted-block .icon { font-size: 18px; }
+
+/* ===== BACK BUTTON ===== */
+.back-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  color: var(--primary-dark);
+  cursor: pointer;
+  font-weight: 600;
+  margin-bottom: 14px;
+  padding: 5px 0;
+}
+.back-btn:hover { color: var(--primary); }
+
+/* ===== HISTORIAL ===== */
+.historial-list { display: flex; flex-direction: column; gap: 0; }
+.historial-item {
+  display: flex;
+  gap: 14px;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--border-light);
+  align-items: flex-start;
+}
+.historial-dot {
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  background: var(--primary);
+  margin-top: 5px;
+  flex-shrink: 0;
+}
+.historial-text { font-size: 12px; color: var(--text-secondary); }
+.historial-meta { font-size: 11px; color: var(--text-muted); }
+
+/* ===== EXPORT PANEL ===== */
+.export-panel {
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: #f8fafb;
+  margin-top: 24px;
+  overflow: hidden;
+}
+.export-panel-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 18px;
+  background: var(--bg-white);
+  border-bottom: 1px solid var(--border);
+  cursor: pointer;
+  user-select: none;
+}
+.export-panel-header:hover { background: var(--primary-light); }
+.export-panel-title {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--primary-dark);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.export-panel-body { padding: 18px; display: none; }
+.export-panel-body.open { display: block; }
+.export-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 14px;
+  margin-bottom: 16px;
+}
+.export-card {
+  background: var(--bg-white);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.export-card-title {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--text-main);
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+.export-card-desc {
+  font-size: 11px;
+  color: var(--text-secondary);
+  line-height: 1.5;
+  flex: 1;
+}
+.export-card-fields {
+  font-size: 10px;
+  color: var(--text-muted);
+  background: var(--bg);
+  border-radius: 3px;
+  padding: 6px 8px;
+  font-family: 'Courier New', monospace;
+  line-height: 1.6;
+}
+.export-card-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-top: 4px;
+}
+.export-format-badge {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  padding: 2px 7px;
+  border-radius: 3px;
+  background: var(--neutral-light);
+  color: var(--neutral);
+}
+.export-notice {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 10px 14px;
+  background: #fffbf0;
+  border: 1px solid #f0d080;
+  border-radius: var(--radius-sm);
+  font-size: 11px;
+  color: #7a5c00;
+  line-height: 1.5;
+}
+.export-preview-modal {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.45);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+.export-preview-box {
+  background: var(--bg-white);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-md);
+  width: 100%;
+  max-width: 720px;
+  max-height: 85vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+.export-preview-header {
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-shrink: 0;
+}
+.export-preview-header h3 { font-size: 15px; font-weight: 700; color: var(--text-main); }
+.export-preview-meta { font-size: 11px; color: var(--text-muted); margin-top: 2px; }
+.export-preview-code {
+  flex: 1;
+  overflow-y: auto;
+  padding: 18px 20px;
+  background: #1a2b30;
+  color: #c8e6c9;
+  font-family: 'Courier New', monospace;
+  font-size: 12px;
+  line-height: 1.7;
+  white-space: pre;
+}
+.export-preview-footer {
+  padding: 14px 20px;
+  border-top: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  flex-shrink: 0;
+  background: var(--bg);
+}
+.export-preview-footer .notice {
+  font-size: 11px;
+  color: var(--text-muted);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+
+/* ===== MODAL ALTA CONTENIDO ===== */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.5);
+  z-index: 2000;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 24px 16px;
+  overflow-y: auto;
+}
+.modal-box {
+  background: var(--bg-white);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-md);
+  width: 100%;
+  max-width: 820px;
+  display: flex;
+  flex-direction: column;
+  margin: auto;
+}
+.modal-header {
+  padding: 18px 24px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: var(--sidebar-bg);
+  border-radius: var(--radius) var(--radius) 0 0;
+}
+.modal-header h2 {
+  font-size: 16px;
+  font-weight: 700;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.modal-header .modal-subtitle {
+  font-size: 11px;
+  color: var(--primary-mid);
+  margin-top: 2px;
+}
+.modal-body {
+  padding: 24px;
+  overflow-y: auto;
+  max-height: calc(90vh - 140px);
+}
+.modal-footer {
+  padding: 16px 24px;
+  border-top: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 10px;
+  background: var(--bg);
+  border-radius: 0 0 var(--radius) var(--radius);
+}
+.form-section {
+  margin-bottom: 24px;
+}
+.form-section-title {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--primary-dark);
+  padding-bottom: 8px;
+  border-bottom: 2px solid var(--primary-light);
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 14px;
+}
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+.form-group.full { grid-column: 1 / -1; }
+.form-label {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text-secondary);
+}
+.form-label .req { color: var(--danger); margin-left: 2px; }
+.form-control {
+  background: var(--bg-white);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 8px 11px;
+  font-size: 13px;
+  font-family: var(--font);
+  color: var(--text-main);
+  outline: none;
+  transition: border-color 0.15s, box-shadow 0.15s;
+  width: 100%;
+}
+.form-control:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 2px rgba(0,140,159,0.12);
+}
+.form-control[readonly] {
+  background: var(--neutral-light);
+  color: var(--text-muted);
+  cursor: default;
+}
+textarea.form-control { resize: vertical; min-height: 72px; }
+.form-hint {
+  font-size: 11px;
+  color: var(--text-muted);
+  margin-top: 2px;
+}
+.form-required-note {
+  font-size: 11px;
+  color: var(--text-muted);
+  margin-bottom: 16px;
+}
+.drm-campos-extra {
+  margin-top: 14px;
+  padding: 14px;
+  background: var(--primary-light);
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--primary-mid);
+}
+.sidebar-badge-new {
+  background: var(--success);
+  color: #fff;
+  font-size: 9px;
+  font-weight: 700;
+  padding: 1px 5px;
+  border-radius: 3px;
+  margin-left: 4px;
+}
+.reset-btn {
+  font-size: 11px;
+  color: var(--text-muted);
+  cursor: pointer;
+  text-decoration: underline;
+  background: none;
+  border: none;
+  padding: 0;
+  font-family: var(--font);
+}
+.reset-btn:hover { color: var(--danger); }
+
+/* ===== SCROLLBAR ===== */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: #c8d8db; border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: var(--primary); }
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 768px) {
+  #sidebar { display: none; }
+  #main-content { padding: 16px; }
+  .kpi-grid { grid-template-columns: 1fr 1fr; }
+}
+</style>
+</head>
+<body>
+
+<!-- ===== TOPBAR ===== -->
+<div id="topbar">
+  <div class="logo">
+    <span>GDR</span>
+    <span class="logo-badge">OTT</span>
+    <span style="font-weight:400; opacity:.6; font-size:12px; margin-left:4px;">Gestión de Derechos Digitales</span>
+  </div>
+  <div class="spacer"></div>
+  <div class="topbar-meta">
+    <span>v1.0 · Entorno demo</span>
+    <span style="opacity:.3">|</span>
+  </div>
+  <div id="profile-switcher">
+    <label>Perfil activo:</label>
+    <select id="profile-select">
+      <option value="derechos">Derechos</option>
+      <option value="administracion">Administración</option>
+      <option value="publicacion">Publicación</option>
+    </select>
+  </div>
+</div>
+
+<!-- ===== APP BODY ===== -->
+<div id="app-body">
+
+  <!-- SIDEBAR -->
+  <nav id="sidebar">
+    <div class="sidebar-section-label">Principal</div>
+    <div class="sidebar-link active" data-section="dashboard" onclick="navigate('dashboard')">
+      <span class="icon">◼</span> Dashboard
+    </div>
+    <div class="sidebar-link" data-section="contenidos" onclick="navigate('contenidos')">
+      <span class="icon">▤</span> Contenidos
+    </div>
+    <div class="sidebar-link" data-section="contratos" onclick="navigate('contratos')">
+      <span class="icon">📄</span> Contratos
+    </div>
+    <div class="sidebar-section-label">Operativa</div>
+    <div class="sidebar-link" data-section="alertas" onclick="navigate('alertas')">
+      <span class="icon">⚠</span> Alertas e incidencias
+      <span class="badge-count">4</span>
+    </div>
+    <div class="sidebar-link" data-section="perfiles" onclick="navigate('perfiles')">
+      <span class="icon">👤</span> Perfiles de acceso
+    </div>
+    <div class="sidebar-section-label" style="margin-top:16px;">Demo</div>
+    <div class="sidebar-link" onclick="abrirFormularioAlta()" style="color:var(--primary-mid);">
+      <span class="icon">➕</span> Nuevo contenido
+      <span class="sidebar-badge-new">DEMO</span>
+    </div>
+    <div class="sidebar-link" onclick="resetData();" style="color:#8fa3a8; font-size:12px;">
+      <span class="icon">↺</span> Restablecer datos
+    </div>
+    <div style="padding:10px 20px;">
+      <div style="font-size:10px;color:#4a6368;line-height:1.5;">
+        Datos guardados en<br>localStorage del navegador
+      </div>
+    </div>
+  </nav>
+
+  <!-- MAIN -->
+  <main id="main-content">
+
+    <!-- ===== DASHBOARD ===== -->
+    <div id="section-dashboard" class="section-content">
+      <div class="page-header">
+        <div>
+          <h1>Panel de control</h1>
+          <p>Resumen operativo de derechos digitales · Actualizado: 8 abr 2025, 09:42</p>
+        </div>
+      </div>
+
+      <div class="kpi-grid">
+        <div class="kpi-card type-primary">
+          <div class="kpi-label">Contenidos activos</div>
+          <div class="kpi-value kpi-activos">47</div>
+          <div class="kpi-sub">En ventana vigente</div>
+        </div>
+        <div class="kpi-card type-neutral">
+          <div class="kpi-label">Con DRM activo</div>
+          <div class="kpi-value kpi-drm">23</div>
+          <div class="kpi-sub">Widevine / FairPlay / PR</div>
+        </div>
+        <div class="kpi-card type-warning">
+          <div class="kpi-label">Pendientes revisión</div>
+          <div class="kpi-value kpi-pendientes">6</div>
+          <div class="kpi-sub">Sin validación completa</div>
+        </div>
+        <div class="kpi-card type-danger">
+          <div class="kpi-label">Contratos próximos a vencer</div>
+          <div class="kpi-value">3</div>
+          <div class="kpi-sub">En los próximos 60 días</div>
+        </div>
+        <div class="kpi-card type-danger">
+          <div class="kpi-label">Bloqueados publicación</div>
+          <div class="kpi-value kpi-bloqueados">2</div>
+          <div class="kpi-sub">Sin validación de derechos</div>
+        </div>
+        <div class="kpi-card type-success kpi-econ">
+          <div class="kpi-label">Valor digital agregado</div>
+          <div class="kpi-value" style="font-size:22px;">124.800 €</div>
+          <div class="kpi-sub">Imputación digital estimada</div>
+        </div>
+      </div>
+
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:20px;">
+        <div class="card">
+          <div class="card-header">
+            <h3>⚠ Incidencias activas</h3>
+            <button class="btn btn-secondary btn-sm" onclick="navigate('alertas')">Ver todas</button>
+          </div>
+          <div class="card-body">
+            <div class="alert-list">
+              <div class="alert-item danger">
+                <span class="alert-icon">🔴</span>
+                <div class="alert-body">
+                  <div class="alert-title">DRM requerido no confirmado</div>
+                  <div class="alert-desc">El Secreto de los Arcos — sin política DRM asignada</div>
+                  <div class="alert-meta">Derechos · hace 2 días</div>
+                </div>
+              </div>
+              <div class="alert-item danger">
+                <span class="alert-icon">🔴</span>
+                <div class="alert-body">
+                  <div class="alert-title">Ventana OTT vencida</div>
+                  <div class="alert-desc">Mareas del Norte (S2) — ventana expiró el 31 mar 2025</div>
+                  <div class="alert-meta">Derechos · hace 8 días</div>
+                </div>
+              </div>
+              <div class="alert-item warning">
+                <span class="alert-icon">🟡</span>
+                <div class="alert-body">
+                  <div class="alert-title">Contrato próximo a expirar</div>
+                  <div class="alert-desc">PROD-2024-019 — vence el 15 mayo 2025</div>
+                  <div class="alert-meta">Administración · en 37 días</div>
+                </div>
+              </div>
+              <div class="alert-item warning">
+                <span class="alert-icon">🟡</span>
+                <div class="alert-body">
+                  <div class="alert-title">Sin imputación económica</div>
+                  <div class="alert-desc">Crónica del Silencio — ficha sin datos de coste digital</div>
+                  <div class="alert-meta">Administración · pendiente</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <h3>📋 Tareas pendientes</h3>
+          </div>
+          <div class="card-body">
+            <div class="historial-list">
+              <div class="historial-item">
+                <div class="historial-dot" style="background:var(--danger)"></div>
+                <div>
+                  <div class="historial-text">Confirmar política DRM para <strong>El Secreto de los Arcos</strong></div>
+                  <div class="historial-meta">Responsable: Área de Derechos · Urgente</div>
+                </div>
+              </div>
+              <div class="historial-item">
+                <div class="historial-dot" style="background:var(--warning)"></div>
+                <div>
+                  <div class="historial-text">Renovar o retirar ventana de <strong>Mareas del Norte S2</strong></div>
+                  <div class="historial-meta">Responsable: Área de Derechos · Pendiente</div>
+                </div>
+              </div>
+              <div class="historial-item">
+                <div class="historial-dot" style="background:var(--warning)"></div>
+                <div>
+                  <div class="historial-text">Completar imputación económica de <strong>Crónica del Silencio</strong></div>
+                  <div class="historial-meta">Responsable: Administración · Pendiente</div>
+                </div>
+              </div>
+              <div class="historial-item">
+                <div class="historial-dot" style="background:var(--info)"></div>
+                <div>
+                  <div class="historial-text">Revisar condiciones digitales de <strong>PROD-2024-019</strong> antes del vencimiento</div>
+                  <div class="historial-meta">Responsable: Derechos + Administración · 37 días</div>
+                </div>
+              </div>
+              <div class="historial-item">
+                <div class="historial-dot" style="background:var(--primary)"></div>
+                <div>
+                  <div class="historial-text">Validación administrativa pendiente: <strong>Terra Nova (S1)</strong></div>
+                  <div class="historial-meta">Responsable: Administración · Esta semana</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== CONTENIDOS ===== -->
+    <div id="section-contenidos" class="section-content hidden">
+      <div class="page-header">
+        <div>
+          <h1>Contenidos</h1>
+          <p>Catálogo de fichas de derechos digitales vinculadas a la OTT</p>
+        </div>
+        <div id="btn-nuevo-contenido">
+          <button class="btn btn-primary" onclick="abrirFormularioAlta()">+ Nuevo contenido</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="filters-bar">
+          <input type="text" id="search-input" placeholder="🔍  Buscar por título, ID o proveedor..." oninput="filterTable()">
+          <select id="filter-estado" onchange="filterTable()">
+            <option value="">Todos los estados</option>
+            <option value="activo">Activo</option>
+            <option value="pendiente">Pendiente</option>
+            <option value="bloqueado">Bloqueado</option>
+            <option value="vencido">Vencido</option>
+          </select>
+          <select id="filter-drm" onchange="filterTable()">
+            <option value="">DRM — todos</option>
+            <option value="sí">Con DRM</option>
+            <option value="no">Sin DRM</option>
+          </select>
+          <select id="filter-proveedor" onchange="filterTable()">
+            <option value="">Todos los proveedores</option>
+            <option value="majorvision">MajorVision</option>
+            <option value="interfilm">InterFilm Iberia</option>
+            <option value="produccion propia">Producción propia</option>
+            <option value="studiomax">StudioMax</option>
+          </select>
+        </div>
+        <div class="table-wrapper">
+          <table>
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Título</th>
+                <th>Tipo</th>
+                <th>Proveedor</th>
+                <th>Contrato</th>
+                <th>Ventana fin</th>
+                <th>DRM</th>
+                <th>Descarga</th>
+                <th>Estado</th>
+                <th>Responsable</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody id="contenidos-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== DETALLE CONTENIDO ===== -->
+    <div id="section-detalle" class="section-content hidden">
+      <div class="back-btn" onclick="navigate('contenidos')">← Volver al listado</div>
+      <div id="detalle-inner"></div>
+    </div>
+
+    <!-- ===== CONTRATOS ===== -->
+    <div id="section-contratos" class="section-content hidden">
+      <div class="page-header">
+        <div>
+          <h1>Contratos</h1>
+          <p>Contratos de adquisición con implicación en la OTT</p>
+        </div>
+      </div>
+      <div class="card">
+        <div class="table-wrapper">
+          <table>
+            <thead>
+              <tr>
+                <th>ID Contrato</th>
+                <th>Proveedor</th>
+                <th>Objeto</th>
+                <th>Importe total</th>
+                <th>% Digital</th>
+                <th>Valor digital</th>
+                <th>Inicio</th>
+                <th>Fin</th>
+                <th>Contenidos</th>
+                <th>Estado</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody id="contratos-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== DETALLE CONTRATO ===== -->
+    <div id="section-detalle-contrato" class="section-content hidden">
+      <div class="back-btn" onclick="navigate('contratos')">← Volver a contratos</div>
+      <div id="detalle-contrato-inner"></div>
+    </div>
+
+    <!-- ===== ALERTAS ===== -->
+    <div id="section-alertas" class="section-content hidden">
+      <div class="page-header">
+        <div>
+          <h1>Alertas e incidencias</h1>
+          <p>Situaciones que requieren atención de algún perfil de la herramienta</p>
+        </div>
+      </div>
+      <div style="display:grid; grid-template-columns:1fr; gap:16px;">
+        <div class="card">
+          <div class="card-header"><h3>🔴 Críticas</h3></div>
+          <div class="card-body">
+            <div class="alert-list">
+              <div class="alert-item danger">
+                <span class="alert-icon">🔒</span>
+                <div class="alert-body">
+                  <div class="alert-title">DRM requerido sin política asignada — El Secreto de los Arcos</div>
+                  <div class="alert-desc">El contrato exige protección DRM de nivel alto (major infantil). La ficha no tiene política DRM asignada. Contenido bloqueado para publicación hasta resolución.</div>
+                  <div class="alert-meta">Detectado: 6 abr 2025 · Responsable: Área de Derechos</div>
+                </div>
+                <button class="btn btn-secondary btn-sm" onclick="openDetalle('C001')">Ver ficha</button>
+              </div>
+              <div class="alert-item danger">
+                <span class="alert-icon">📅</span>
+                <div class="alert-body">
+                  <div class="alert-title">Ventana OTT vencida — Mareas del Norte (Temporada 2)</div>
+                  <div class="alert-desc">La ventana digital de explotación expiró el 31 de marzo de 2025. El contenido sigue activo en el CMS OTT. Es necesario retirar el activo o renovar la ventana contractualmente.</div>
+                  <div class="alert-meta">Detectado: 1 abr 2025 · Responsable: Área de Derechos</div>
+                </div>
+                <button class="btn btn-secondary btn-sm" onclick="openDetalle('C004')">Ver ficha</button>
+              </div>
+              <div class="alert-item danger">
+                <span class="alert-icon">⚖️</span>
+                <div class="alert-body">
+                  <div class="alert-title">Conflicto publicación-derechos — Paisajes de Inverno</div>
+                  <div class="alert-desc">Contenido marcado para publicación en Área de Publicación pero sin validación de derechos completada. Existe un geobloqueo que no está configurado en el player.</div>
+                  <div class="alert-meta">Detectado: 7 abr 2025 · Responsable: Derechos + Publicación</div>
+                </div>
+                <button class="btn btn-secondary btn-sm" onclick="openDetalle('C003')">Ver ficha</button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-header"><h3>🟡 Avisos</h3></div>
+          <div class="card-body">
+            <div class="alert-list">
+              <div class="alert-item warning">
+                <span class="alert-icon">📋</span>
+                <div class="alert-body">
+                  <div class="alert-title">Contrato próximo a expirar — PROD-2024-019 (InterFilm Iberia)</div>
+                  <div class="alert-desc">El contrato vence el 15 de mayo de 2025 (37 días). Incluye 2 contenidos activos en OTT. Necesario contactar con el proveedor para renovación o retirar los activos.</div>
+                  <div class="alert-meta">Aviso generado: 1 abr 2025 · Responsable: Administración</div>
+                </div>
+                <button class="btn btn-secondary btn-sm" onclick="openDetalleContrato('PROD-2024-019')">Ver contrato</button>
+              </div>
+              <div class="alert-item warning">
+                <span class="alert-icon">💶</span>
+                <div class="alert-body">
+                  <div class="alert-title">Sin imputación económica — Crónica del Silencio</div>
+                  <div class="alert-desc">La ficha de derechos está completa, pero no tiene datos de valoración económica digital asignados. No se puede generar informe de coste digital.</div>
+                  <div class="alert-meta">Pendiente desde: 20 mar 2025 · Responsable: Administración</div>
+                </div>
+                <button class="btn btn-secondary btn-sm" onclick="openDetalle('C005')">Ver ficha</button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-header"><h3>🔵 Informativas</h3></div>
+          <div class="card-body">
+            <div class="alert-list">
+              <div class="alert-item info">
+                <span class="alert-icon">✅</span>
+                <div class="alert-body">
+                  <div class="alert-title">Sincronización DRM completada — Terra Nova (Temporada 1)</div>
+                  <div class="alert-desc">Las políticas Widevine y FairPlay han sido sincronizadas correctamente con el sistema DRM del player. Estado: operativo.</div>
+                  <div class="alert-meta">Resuelto: 5 abr 2025</div>
+                </div>
+              </div>
+              <div class="alert-item info">
+                <span class="alert-icon">📝</span>
+                <div class="alert-body">
+                  <div class="alert-title">Validación administrativa pendiente — Terra Nova (T1)</div>
+                  <div class="alert-desc">Los datos de imputación digital han sido introducidos por Administración. Pendiente de revisión y validación final.</div>
+                  <div class="alert-meta">Pendiente: 4 abr 2025 · Responsable: Administración</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== PERFILES ===== -->
+    <div id="section-perfiles" class="section-content hidden">
+      <div class="page-header">
+        <div>
+          <h1>Perfiles de acceso</h1>
+          <p>Definición de roles y permisos en la herramienta GDR·OTT</p>
+        </div>
+      </div>
+      <div class="profiles-grid">
+        <div class="profile-card derechos">
+          <div class="profile-header">
+            <div class="profile-icon">⚖️</div>
+            <div>
+              <div class="profile-name">Derechos</div>
+              <div class="profile-desc">Gestión contractual y operativa digital</div>
+            </div>
+          </div>
+          <div class="profile-perms">
+            <div class="perm-item"><span class="perm-ok">✔</span> Ver dashboard completo</div>
+            <div class="perm-item"><span class="perm-ok">✔</span> Alta y edición de fichas de contenido</div>
+            <div class="perm-item"><span class="perm-ok">✔</span> Asociar contrato y definir ventana</div>
+            <div class="perm-item"><span class="perm-ok">✔</span> Editar territorios, restricciones, plantillas</div>
+            <div class="perm-item"><span class="perm-ok">✔</span> Asignar políticas DRM</div>
+            <div class="perm-item"><span class="perm-ok">✔</span> Cambiar estado legal/operativo</div>
+            <div class="perm-item"><span class="perm-limited">◑</span> Ver información económica (resumida, sin editar amortización)</div>
+            <div class="perm-item"><span class="perm-no">✖</span> Editar campos de amortización y coste</div>
+            <div class="perm-item"><span class="perm-no">✖</span> Validar imputación administrativa</div>
+          </div>
+        </div>
+        <div class="profile-card administracion">
+          <div class="profile-header">
+            <div class="profile-icon">💶</div>
+            <div>
+              <div class="profile-name">Administración</div>
+              <div class="profile-desc">Control económico y validación de imputaciones</div>
+            </div>
+          </div>
+          <div class="profile-perms">
+            <div class="perm-item"><span class="perm-ok">✔</span> Ver dashboard completo</div>
+            <div class="perm-item"><span class="perm-ok">✔</span> Ver todas las fichas de contenido</div>
+            <div class="perm-item"><span class="perm-ok">✔</span> Editar información económica completa</div>
+            <div class="perm-item"><span class="perm-ok">✔</span> Definir modelo y coste de amortización</div>
+            <div class="perm-item"><span class="perm-ok">✔</span> Validar imputación digital</div>
+            <div class="perm-item"><span class="perm-ok">✔</span> Ver contratos y alertas de caducidad</div>
+            <div class="perm-item"><span class="perm-limited">◑</span> Ver derechos operativos (solo lectura)</div>
+            <div class="perm-item"><span class="perm-no">✖</span> Editar reglas DRM ni territorios</div>
+            <div class="perm-item"><span class="perm-no">✖</span> Cambiar estado de publicación</div>
+          </div>
+        </div>
+        <div class="profile-card publicacion">
+          <div class="profile-header">
+            <div class="profile-icon">📡</div>
+            <div>
+              <div class="profile-name">Publicación</div>
+              <div class="profile-desc">Control operativo de disponibilidad en OTT</div>
+            </div>
+          </div>
+          <div class="profile-perms">
+            <div class="perm-item"><span class="perm-ok">✔</span> Ver dashboard operativo</div>
+            <div class="perm-item"><span class="perm-ok">✔</span> Consultar listado de contenidos</div>
+            <div class="perm-item"><span class="perm-ok">✔</span> Ver estado de publicación (semáforo)</div>
+            <div class="perm-item"><span class="perm-ok">✔</span> Ver ventana, dispositivos, DRM, descarga</div>
+            <div class="perm-item"><span class="perm-ok">✔</span> Solicitar revisión o marcar para publicación</div>
+            <div class="perm-item"><span class="perm-limited">◑</span> Ver DRM requerido (sin configuración técnica)</div>
+            <div class="perm-item"><span class="perm-no">✖</span> Ver información económica sensible</div>
+            <div class="perm-item"><span class="perm-no">✖</span> Editar contratos o reglas de derechos</div>
+            <div class="perm-item"><span class="perm-no">✖</span> Modificar políticas DRM</div>
+          </div>
+        </div>
+      </div>
+      <div class="card mt-16" style="margin-top:20px;">
+        <div class="card-header"><h3>ℹ Nota conceptual</h3></div>
+        <div class="card-body" style="color:var(--text-secondary); font-size:13px; line-height:1.7;">
+          <p>Esta herramienta actúa como <strong>capa intermedia complementaria</strong>. No sustituye al CMS OTT, al sistema lineal de gestión de derechos ni a los sistemas contables principales.</p>
+          <p class="mt-8">Su función es <strong>traducir contratos y condiciones de adquisición a reglas operativas digitales</strong>, conectar la perspectiva de derechos con la económica y la de publicación, y facilitar la gobernanza de contenidos premium o con restricciones especiales (major, infantil, geobloqueo, DRM obligatorio).</p>
+          <p class="mt-8">Las integraciones con player, DRM provider y CMS OTT se realizarían por API, de forma posterior a la validación interna en esta herramienta.</p>
+        </div>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+
+<!-- ===== MODAL ALTA DE CONTENIDO ===== -->
+<div id="modal-alta" class="modal-overlay hidden">
+  <div class="modal-box">
+    <div class="modal-header">
+      <div>
+        <h2>➕ Alta de contenido — Perfil Derechos</h2>
+        <div class="modal-subtitle">Los datos económicos serán completados posteriormente por Administración</div>
+      </div>
+      <button class="btn btn-secondary btn-sm" style="background:#2a3d42;color:#fff;border-color:#3d5560;" onclick="cerrarFormularioAlta()">✖ Cancelar</button>
+    </div>
+
+    <div class="modal-body">
+      <form id="form-alta" onsubmit="return false;">
+        <p class="form-required-note">Los campos marcados con <span style="color:var(--danger)">*</span> son obligatorios.</p>
+
+        <!-- SECCIÓN A: IDENTIFICACIÓN -->
+        <div class="form-section">
+          <div class="form-section-title">🗂 A. Identificación</div>
+          <div class="form-grid">
+            <div class="form-group">
+              <label class="form-label">ID interno <span class="req">*</span></label>
+              <input id="alta-id" class="form-control" type="text" placeholder="Ej: C006" readonly>
+              <span class="form-hint">Generado automáticamente</span>
+            </div>
+            <div class="form-group">
+              <label class="form-label">ID CMS OTT</label>
+              <input id="alta-cms-id" class="form-control" type="text" placeholder="Ej: OTT-9001">
+              <span class="form-hint">Identificador en el CMS/OVP si ya existe</span>
+            </div>
+            <div class="form-group full">
+              <label class="form-label">Título <span class="req">*</span></label>
+              <input id="alta-titulo" class="form-control" type="text" placeholder="Título completo del contenido">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Tipo de contenido <span class="req">*</span></label>
+              <select id="alta-tipo" class="form-control">
+                <option value="">— Seleccionar —</option>
+                <option>Serie infantil</option>
+                <option>Serie de ficción</option>
+                <option>Serie de archivo</option>
+                <option>Documental propio</option>
+                <option>Documental externo</option>
+                <option>Película</option>
+                <option>Programa de entretenimiento</option>
+                <option>Magazine</option>
+                <option>Deporte</option>
+                <option>Informativo</option>
+                <option>Otro</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Marca / Plataforma</label>
+              <select id="alta-marca" class="form-control">
+                <option>OTT Principal</option>
+                <option>Infantil</option>
+                <option>Archivo</option>
+                <option>Multilingüe</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Proveedor <span class="req">*</span></label>
+              <input id="alta-proveedor" class="form-control" type="text" placeholder="Nombre del proveedor o 'Producción propia'">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Contrato asociado <span class="req">*</span></label>
+              <input id="alta-contrato" class="form-control" type="text" placeholder="Ej: CONT-2025-001">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Fecha de alta</label>
+              <input id="alta-fecha" class="form-control" type="date" readonly>
+            </div>
+          </div>
+        </div>
+
+        <!-- SECCIÓN B: DERECHOS OPERATIVOS -->
+        <div class="form-section">
+          <div class="form-section-title">📋 B. Derechos digitales operativos</div>
+          <div class="form-grid">
+            <div class="form-group">
+              <label class="form-label">Ventana OTT inicio <span class="req">*</span></label>
+              <input id="alta-ventana-inicio" class="form-control" type="date">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Ventana OTT fin <span class="req">*</span></label>
+              <input id="alta-ventana-fin" class="form-control" type="date">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Territorio permitido <span class="req">*</span></label>
+              <input id="alta-territorio" class="form-control" type="text" placeholder="Ej: España, Sin restricciones">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Territorios excluidos</label>
+              <input id="alta-territorios-excluidos" class="form-control" type="text" placeholder="Ej: Andorra, Gibraltar">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Dispositivos permitidos</label>
+              <input id="alta-dispositivos" class="form-control" type="text" value="Web, Smart TV, iOS, Android">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Máx. dispositivos simultáneos</label>
+              <input id="alta-max-dispositivos" class="form-control" type="text" value="4">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Reproducción simultánea</label>
+              <input id="alta-simultaneous" class="form-control" type="text" value="2">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Descarga permitida</label>
+              <select id="alta-descarga" class="form-control">
+                <option value="No">No</option>
+                <option value="Sí">Sí</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Reproducción offline</label>
+              <select id="alta-offline" class="form-control">
+                <option value="No">No</option>
+                <option value="Sí">Sí</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Plantilla aplicada</label>
+              <select id="alta-plantilla" class="form-control">
+                <option>Estándar</option>
+                <option>Major Infantil Premium</option>
+                <option>Producción Propia Estándar</option>
+                <option>Territorial Exclusivo</option>
+                <option>Externo Estándar DRM</option>
+                <option>Archivo Largo Plazo</option>
+              </select>
+            </div>
+            <div class="form-group full">
+              <label class="form-label">Observaciones operativas</label>
+              <textarea id="alta-observaciones" class="form-control" placeholder="Notas sobre restricciones especiales, condiciones particulares del contrato..."></textarea>
+            </div>
+          </div>
+        </div>
+
+        <!-- SECCIÓN C: DRM -->
+        <div class="form-section">
+          <div class="form-section-title">🔒 C. Reglas DRM</div>
+          <div class="form-grid">
+            <div class="form-group">
+              <label class="form-label">DRM requerido <span class="req">*</span></label>
+              <select id="alta-drm-requerido" class="form-control" onchange="toggleDRMFields()">
+                <option value="No">No — contenido libre</option>
+                <option value="Sí">Sí — protección obligatoria</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Geobloqueo</label>
+              <select id="alta-geobloqueo" class="form-control">
+                <option value="No">No</option>
+                <option value="Sí">Sí — geobloqueo activo</option>
+              </select>
+            </div>
+          </div>
+
+          <div id="drm-campos-extra" class="drm-campos-extra" style="display:none;">
+            <div class="form-grid">
+              <div class="form-group">
+                <label class="form-label">Sistemas DRM aplicables</label>
+                <input id="alta-drm-sistemas" class="form-control" type="text" placeholder="Ej: Widevine, FairPlay">
+                <span class="form-hint">Separados por coma</span>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Nivel de protección</label>
+                <select id="alta-drm-nivel" class="form-control">
+                  <option value="Alto (L1)">Alto (L1) — Hardware</option>
+                  <option value="Medio (L3)" selected>Medio (L3) — Software</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Token temporal de licencia</label>
+                <select id="alta-token-temporal" class="form-control">
+                  <option value="Sí">Sí</option>
+                  <option value="No">No</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-group full" style="margin-top:14px;">
+            <label class="form-label">Notas técnicas DRM</label>
+            <textarea id="alta-notas-tecnicas" class="form-control" placeholder="Observaciones para el equipo técnico sobre la configuración DRM..."></textarea>
+          </div>
+        </div>
+
+        <!-- NOTA ECONÓMICA -->
+        <div class="restricted-block" style="margin-top:0;">
+          <span class="icon">💶</span>
+          <div>
+            <strong>Sección D — Información económica</strong>: será completada por el Área de Administración una vez creada la ficha. Los campos de imputación digital, amortización y coste mensual no son editables desde el perfil Derechos.
+          </div>
+        </div>
+
+      </form>
+    </div>
+
+    <div class="modal-footer">
+      <button class="reset-btn" onclick="if(confirm('¿Limpiar todos los datos del formulario?')) document.getElementById(\'form-alta\').reset();">Limpiar formulario</button>
+      <button class="btn btn-secondary" onclick="cerrarFormularioAlta()">Cancelar</button>
+      <button class="btn btn-primary" onclick="guardarNuevoContenido()">✔ Dar de alta el contenido</button>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST CONTAINER -->
+<div id="toast-container"></div>
+
+<script>
+// ===== DATOS MOCK =====
+
+const SEED_CONTENIDOS = [
+  {
+    id: 'C001',
+    titulo: 'El Secreto de los Arcos',
+    tipo: 'Serie infantil',
+    marca: 'OTT Principal',
+    proveedor: 'MajorVision',
+    contrato: 'CONT-2024-042',
+    ventanaInicio: '2024-09-01',
+    ventanaFin: '2025-12-31',
+    drm: 'Sí',
+    descarga: 'No',
+    offline: 'No',
+    estado: 'bloqueado',
+    responsable: 'Área de Derechos',
+    ultimoEditor: 'Derechos',
+    cmsId: 'OTT-7823',
+    fechaAlta: '2024-08-15',
+    ultimaActualizacion: '2025-04-06',
+    territorio: 'España',
+    territoriosExcluidos: 'Andorra, Gibraltar',
+    dispositivos: 'Smart TV, Web, iOS, Android',
+    maxDispositivos: '4',
+    simultaneous: '2',
+    observaciones: 'Contrato major con DRM obligatorio. Sin descarga permitida. Requiere geobloqueo por ventana territorial.',
+    plantilla: 'Major Infantil Premium',
+    drmRequerido: 'Sí',
+    drmSistemas: 'Widevine, FairPlay',
+    drmNivel: 'Alto (L1)',
+    tokenTemporal: 'Sí',
+    geobloqueo: 'Sí',
+    notasTecnicas: 'DRM sin confirmar con proveedor técnico. Pendiente sincronización con sistema DRM del player.',
+    syncDRM: 'pendiente',
+    valorContrato: '180.000',
+    pctDigital: '35%',
+    valorDigital: '63.000',
+    amortizacion: 'Lineal 36 meses',
+    inicioAmortizacion: '2024-09-01',
+    costeMensual: '1.750',
+    centroCoste: 'CC-DIGITAL-01',
+    observacionesAdmin: 'Pendiente revisión interna del porcentaje digital con dirección económica.',
+    validacionDerechos: 'No',
+    validacionAdmin: 'No',
+    listoPublicacion: 'No',
+    incidencias: ['DRM requerido sin confirmar', 'Bloqueado hasta configuración DRM'],
+    historial: [
+      { fecha: '2025-04-06', accion: 'Alerta generada: DRM requerido sin política asignada', perfil: 'Sistema' },
+      { fecha: '2025-03-10', accion: 'Ficha asociada a contrato CONT-2024-042', perfil: 'Derechos' },
+      { fecha: '2024-08-15', accion: 'Alta de ficha en GDR·OTT', perfil: 'Derechos' },
+    ]
+  },
+  {
+    id: 'C002',
+    titulo: 'Terra Nova (Temporada 1)',
+    tipo: 'Documental propio',
+    marca: 'OTT Principal',
+    proveedor: 'Producción propia',
+    contrato: 'PROD-2024-007',
+    ventanaInicio: '2024-11-01',
+    ventanaFin: '2027-10-31',
+    drm: 'No',
+    descarga: 'Sí',
+    offline: 'Sí',
+    estado: 'activo',
+    responsable: 'Área de Derechos',
+    ultimoEditor: 'Administración',
+    cmsId: 'OTT-8041',
+    fechaAlta: '2024-10-20',
+    ultimaActualizacion: '2025-04-04',
+    territorio: 'Sin restricciones',
+    territoriosExcluidos: '—',
+    dispositivos: 'Todos los dispositivos',
+    maxDispositivos: 'Ilimitado',
+    simultaneous: 'Sin límite',
+    observaciones: 'Producción propia. Todos los derechos. Descarga y offline permitidos.',
+    plantilla: 'Producción Propia Estándar',
+    drmRequerido: 'No',
+    drmSistemas: '—',
+    drmNivel: '—',
+    tokenTemporal: 'No',
+    geobloqueo: 'No',
+    notasTecnicas: 'Sin restricciones técnicas. Streaming abierto.',
+    syncDRM: 'noaplica',
+    valorContrato: '28.000',
+    pctDigital: '100%',
+    valorDigital: '28.000',
+    amortizacion: 'Lineal 36 meses',
+    inicioAmortizacion: '2024-11-01',
+    costeMensual: '778',
+    centroCoste: 'CC-DIGITAL-01',
+    observacionesAdmin: 'Producción propia. Coste de producción registrado en sistema contable principal.',
+    validacionDerechos: 'Sí',
+    validacionAdmin: 'Pendiente revisión',
+    listoPublicacion: 'Sí',
+    incidencias: [],
+    historial: [
+      { fecha: '2025-04-04', accion: 'Sincronización DRM completada (N/A — sin DRM)', perfil: 'Sistema' },
+      { fecha: '2025-04-01', accion: 'Validación de derechos completada', perfil: 'Derechos' },
+      { fecha: '2024-10-20', accion: 'Alta de ficha en GDR·OTT', perfil: 'Derechos' },
+    ]
+  },
+  {
+    id: 'C003',
+    titulo: 'Paisajes de Inverno',
+    tipo: 'Película',
+    marca: 'OTT Principal',
+    proveedor: 'InterFilm Iberia',
+    contrato: 'PROD-2024-019',
+    ventanaInicio: '2025-01-15',
+    ventanaFin: '2025-07-14',
+    drm: 'Sí',
+    descarga: 'No',
+    offline: 'No',
+    estado: 'pendiente',
+    responsable: 'Área de Derechos',
+    ultimoEditor: 'Publicación',
+    cmsId: 'OTT-8290',
+    fechaAlta: '2025-01-10',
+    ultimaActualizacion: '2025-04-07',
+    territorio: 'Galicia (España)',
+    territoriosExcluidos: 'Resto de España, Portugal',
+    dispositivos: 'Web, Smart TV',
+    maxDispositivos: '2',
+    simultaneous: '1',
+    observaciones: 'Geobloqueo estricto a Galicia. Acuerdo de exclusividad territorial con el distribuidor.',
+    plantilla: 'Territorial Exclusivo',
+    drmRequerido: 'Sí',
+    drmSistemas: 'Widevine, FairPlay, PlayReady',
+    drmNivel: 'Alto (L1)',
+    tokenTemporal: 'Sí',
+    geobloqueo: 'Sí',
+    notasTecnicas: 'Geobloqueo pendiente de configurar en el player. Riesgo de incumplimiento contractual si se publica sin este ajuste.',
+    syncDRM: 'error',
+    valorContrato: '45.000',
+    pctDigital: '20%',
+    valorDigital: '9.000',
+    amortizacion: 'Lineal 6 meses',
+    inicioAmortizacion: '2025-01-15',
+    costeMensual: '1.500',
+    centroCoste: 'CC-DIGITAL-02',
+    observacionesAdmin: 'Imputación validada. Contrato próximo a vencer en mayo 2025.',
+    validacionDerechos: 'No',
+    validacionAdmin: 'Sí',
+    listoPublicacion: 'No',
+    incidencias: ['Geobloqueo no configurado en player', 'Validación de derechos pendiente'],
+    historial: [
+      { fecha: '2025-04-07', accion: 'Marcado para publicación por Publicación (sin validación de derechos)', perfil: 'Publicación' },
+      { fecha: '2025-04-05', accion: 'Error en sincronización DRM — geobloqueo no confirmado', perfil: 'Sistema' },
+      { fecha: '2025-01-10', accion: 'Alta de ficha en GDR·OTT', perfil: 'Derechos' },
+    ]
+  },
+  {
+    id: 'C004',
+    titulo: 'Mareas del Norte (Temporada 2)',
+    tipo: 'Serie de archivo',
+    marca: 'OTT Principal',
+    proveedor: 'Producción propia',
+    contrato: 'ARCH-2022-004',
+    ventanaInicio: '2022-09-01',
+    ventanaFin: '2025-03-31',
+    drm: 'No',
+    descarga: 'Sí',
+    offline: 'No',
+    estado: 'vencido',
+    responsable: 'Área de Derechos',
+    ultimoEditor: 'Derechos',
+    cmsId: 'OTT-5512',
+    fechaAlta: '2022-08-20',
+    ultimaActualizacion: '2025-04-01',
+    territorio: 'España',
+    territoriosExcluidos: '—',
+    dispositivos: 'Web, Smart TV, iOS, Android',
+    maxDispositivos: '3',
+    simultaneous: '2',
+    observaciones: 'Ventana vencida el 31 de marzo de 2025. Pendiente de decisión de renovación o retirada.',
+    plantilla: 'Producción Propia Estándar',
+    drmRequerido: 'No',
+    drmSistemas: '—',
+    drmNivel: '—',
+    tokenTemporal: 'No',
+    geobloqueo: 'No',
+    notasTecnicas: 'Sin DRM. Ventana vencida. El activo sigue visible en el CMS OTT.',
+    syncDRM: 'noaplica',
+    valorContrato: '12.000',
+    pctDigital: '100%',
+    valorDigital: '12.000',
+    amortizacion: 'Lineal 30 meses',
+    inicioAmortizacion: '2022-09-01',
+    costeMensual: '400',
+    centroCoste: 'CC-DIGITAL-01',
+    observacionesAdmin: 'Amortización completada. Sin coste adicional.',
+    validacionDerechos: 'Sí',
+    validacionAdmin: 'Sí',
+    listoPublicacion: 'No',
+    incidencias: ['Ventana OTT vencida desde 31 mar 2025'],
+    historial: [
+      { fecha: '2025-04-01', accion: 'Alerta automática: ventana vencida', perfil: 'Sistema' },
+      { fecha: '2022-08-20', accion: 'Alta de ficha en GDR·OTT', perfil: 'Derechos' },
+    ]
+  },
+  {
+    id: 'C005',
+    titulo: 'Crónica del Silencio',
+    tipo: 'Documental externo',
+    marca: 'OTT Principal',
+    proveedor: 'StudioMax',
+    contrato: 'CONT-2023-088',
+    ventanaInicio: '2024-06-01',
+    ventanaFin: '2026-05-31',
+    drm: 'Sí',
+    descarga: 'No',
+    offline: 'No',
+    estado: 'pendiente',
+    responsable: 'Administración',
+    ultimoEditor: 'Derechos',
+    cmsId: 'OTT-7240',
+    fechaAlta: '2024-05-20',
+    ultimaActualizacion: '2025-03-20',
+    territorio: 'España',
+    territoriosExcluidos: '—',
+    dispositivos: 'Web, Smart TV, iOS, Android',
+    maxDispositivos: '4',
+    simultaneous: '2',
+    observaciones: 'Derechos completos con DRM. Sin imputación económica digital completada.',
+    plantilla: 'Externo Estándar DRM',
+    drmRequerido: 'Sí',
+    drmSistemas: 'Widevine, FairPlay',
+    drmNivel: 'Medio (L3)',
+    tokenTemporal: 'Sí',
+    geobloqueo: 'No',
+    notasTecnicas: 'DRM operativo. Sin incidencias técnicas.',
+    syncDRM: 'ok',
+    valorContrato: '22.000',
+    pctDigital: '—',
+    valorDigital: '—',
+    amortizacion: '—',
+    inicioAmortizacion: '—',
+    costeMensual: '—',
+    centroCoste: 'CC-DIGITAL-02',
+    observacionesAdmin: 'Pendiente asignación de imputación digital. Sin datos de coste.',
+    validacionDerechos: 'Sí',
+    validacionAdmin: 'No',
+    listoPublicacion: 'No',
+    incidencias: ['Sin imputación económica digital'],
+    historial: [
+      { fecha: '2025-03-20', accion: 'Alerta: ficha sin imputación económica', perfil: 'Sistema' },
+      { fecha: '2024-05-20', accion: 'Alta de ficha en GDR·OTT', perfil: 'Derechos' },
+    ]
+  }
+];
+
+const SEED_CONTRATOS = [
+  {
+    id: 'CONT-2024-042',
+    proveedor: 'MajorVision',
+    objeto: 'Serie infantil — El Secreto de los Arcos',
+    importe: '180.000 €',
+    pctDigital: '35%',
+    valorDigital: '63.000 €',
+    inicio: '2024-09-01',
+    fin: '2025-12-31',
+    contenidos: ['C001'],
+    estado: 'activo',
+    alerta: null
+  },
+  {
+    id: 'PROD-2024-007',
+    proveedor: 'Producción propia',
+    objeto: 'Documental Terra Nova (T1)',
+    importe: '28.000 €',
+    pctDigital: '100%',
+    valorDigital: '28.000 €',
+    inicio: '2024-11-01',
+    fin: '2027-10-31',
+    contenidos: ['C002'],
+    estado: 'activo',
+    alerta: null
+  },
+  {
+    id: 'PROD-2024-019',
+    proveedor: 'InterFilm Iberia',
+    objeto: 'Película Paisajes de Inverno + Crónica del Silencio (Lote)',
+    importe: '67.000 €',
+    pctDigital: '—',
+    valorDigital: '—',
+    inicio: '2025-01-15',
+    fin: '2025-05-15',
+    contenidos: ['C003', 'C005'],
+    estado: 'proximo-vencimiento',
+    alerta: 'Vence en 37 días'
+  },
+  {
+    id: 'ARCH-2022-004',
+    proveedor: 'Producción propia',
+    objeto: 'Archivo — Mareas del Norte (T1, T2)',
+    importe: '12.000 €',
+    pctDigital: '100%',
+    valorDigital: '12.000 €',
+    inicio: '2022-09-01',
+    fin: '2025-03-31',
+    contenidos: ['C004'],
+    estado: 'vencido',
+    alerta: 'Vencido'
+  },
+  {
+    id: 'CONT-2023-088',
+    proveedor: 'StudioMax',
+    objeto: 'Documental externo — Crónica del Silencio',
+    importe: '22.000 €',
+    pctDigital: '—',
+    valorDigital: '—',
+    inicio: '2024-06-01',
+    fin: '2026-05-31',
+    contenidos: ['C005'],
+    estado: 'activo',
+    alerta: null
+  },
+];
+
+// ===== LOCALSTORAGE PERSISTENCE =====
+const LS_KEY_CONTENIDOS = 'gdr_contenidos_v1';
+const LS_KEY_CONTRATOS  = 'gdr_contratos_v1';
+
+// Inicializar arrays desde semilla (deep copy)
+let contenidos = JSON.parse(JSON.stringify(SEED_CONTENIDOS));
+let contratos  = JSON.parse(JSON.stringify(SEED_CONTRATOS));
+
+// Intentar cargar desde localStorage (sobrescribe la semilla si hay datos guardados)
+(function loadData() {
+  try {
+    const rawC = localStorage.getItem(LS_KEY_CONTENIDOS);
+    const rawK = localStorage.getItem(LS_KEY_CONTRATOS);
+    if (rawC) {
+      const parsed = JSON.parse(rawC);
+      if (Array.isArray(parsed) && parsed.length > 0) {
+        contenidos = parsed;
+      }
+    }
+    if (rawK) {
+      const parsed = JSON.parse(rawK);
+      if (Array.isArray(parsed) && parsed.length > 0) {
+        contratos = parsed;
+      }
+    }
+  } catch(e) {
+    console.warn('GDR: localStorage no disponible o datos corruptos, usando semilla.', e);
+    contenidos = JSON.parse(JSON.stringify(SEED_CONTENIDOS));
+    contratos  = JSON.parse(JSON.stringify(SEED_CONTRATOS));
+  }
+})();
+
+function saveData() {
+  try {
+    localStorage.setItem(LS_KEY_CONTENIDOS, JSON.stringify(contenidos));
+    localStorage.setItem(LS_KEY_CONTRATOS, JSON.stringify(contratos));
+  } catch(e) {
+    console.warn('GDR: no se pudo guardar en localStorage:', e);
+    showToast('Aviso: los cambios no se podrán persistir en este navegador', 'warning');
+  }
+}
+
+function resetData() {
+  if (!confirm('¿Restablecer todos los datos de ejemplo? Se perderán los contenidos añadidos.')) return;
+  try {
+    localStorage.removeItem(LS_KEY_CONTENIDOS);
+    localStorage.removeItem(LS_KEY_CONTRATOS);
+  } catch(e) {}
+  contenidos = JSON.parse(JSON.stringify(SEED_CONTENIDOS));
+  contratos  = JSON.parse(JSON.stringify(SEED_CONTRATOS));
+  navigate('dashboard');
+  actualizarKPIs();
+  showToast('Datos restablecidos a los valores de ejemplo', 'success');
+}
+
+// ===== ESTADO GLOBAL =====
+let currentProfile = 'derechos';
+let currentSection = 'dashboard';
+
+// ===== NAVEGACIÓN =====
+function navigate(section) {
+  document.querySelectorAll('.section-content').forEach(el => el.classList.add('hidden'));
+  document.querySelectorAll('.sidebar-link').forEach(el => el.classList.remove('active'));
+  const target = document.getElementById('section-' + section);
+  if (target) target.classList.remove('hidden');
+  const link = document.querySelector('[data-section="' + section + '"]');
+  if (link) link.classList.add('active');
+  currentSection = section;
+  if (section === 'contenidos') renderContenidos();
+  if (section === 'contratos') renderContratos();
+  if (section === 'dashboard') actualizarKPIs();
+}
+
+// ===== PERFIL =====
+document.getElementById('profile-select').addEventListener('change', function() {
+  currentProfile = this.value;
+  applyProfileRestrictions();
+  showToast('Perfil cambiado a: ' + profileLabel(currentProfile), 'info');
+  if (currentSection === 'detalle') navigate('contenidos');
+});
+
+function profileLabel(p) {
+  return { derechos: 'Derechos', administracion: 'Administración', publicacion: 'Publicación' }[p];
+}
+
+function applyProfileRestrictions() {
+  // Sidebar
+  const btnNuevo = document.getElementById('btn-nuevo-contenido');
+  if (btnNuevo) btnNuevo.style.display = (currentProfile === 'derechos') ? '' : 'none';
+  // KPI econ
+  document.querySelectorAll('.kpi-econ').forEach(el => {
+    el.style.display = (currentProfile === 'publicacion') ? 'none' : '';
+  });
+}
+
+// ===== RENDER CONTENIDOS =====
+function renderContenidos() {
+  const q = (document.getElementById('search-input').value || '').toLowerCase();
+  const fEst = document.getElementById('filter-estado').value.toLowerCase();
+  const fDRM = document.getElementById('filter-drm').value.toLowerCase();
+  const fProv = document.getElementById('filter-proveedor').value.toLowerCase();
+
+  const filtered = contenidos.filter(c => {
+    const matchQ = !q || c.titulo.toLowerCase().includes(q) || c.id.toLowerCase().includes(q) || c.proveedor.toLowerCase().includes(q);
+    const matchEst = !fEst || c.estado === fEst;
+    const matchDRM = !fDRM || c.drm.toLowerCase() === fDRM;
+    const matchProv = !fProv || c.proveedor.toLowerCase().includes(fProv);
+    return matchQ && matchEst && matchDRM && matchProv;
+  });
+
+  const tbody = document.getElementById('contenidos-tbody');
+  tbody.innerHTML = filtered.map(c => `
+    <tr>
+      <td class="muted">${c.id}</td>
+      <td><span class="link-cell" onclick="openDetalle('${c.id}')">${c.titulo}</span></td>
+      <td class="muted">${c.tipo}</td>
+      <td class="muted">${c.proveedor}</td>
+      <td class="muted">${c.contrato}</td>
+      <td class="muted">${c.ventanaFin}</td>
+      <td>${c.drm === 'Sí' ? '<span class="badge badge-info">🔒 DRM</span>' : '<span class="badge badge-neutral">Sin DRM</span>'}</td>
+      <td>${c.descarga === 'Sí' ? '<span class="badge badge-success">✓ Sí</span>' : '<span class="badge badge-neutral">No</span>'}</td>
+      <td>${estadoBadge(c.estado)}</td>
+      <td class="muted">${c.responsable}</td>
+      <td><button class="btn btn-secondary btn-sm" onclick="openDetalle('${c.id}')">Ver ficha</button></td>
+    </tr>
+  `).join('');
+}
+
+function estadoBadge(estado) {
+  const m = {
+    activo: '<span class="badge badge-success">● Activo</span>',
+    pendiente: '<span class="badge badge-warning">● Pendiente</span>',
+    bloqueado: '<span class="badge badge-danger">● Bloqueado</span>',
+    vencido: '<span class="badge badge-neutral">● Vencido</span>',
+  };
+  return m[estado] || estado;
+}
+
+function filterTable() { if (currentSection === 'contenidos') renderContenidos(); }
+
+// ===== DETALLE CONTENIDO =====
+function openDetalle(id) {
+  const c = contenidos.find(x => x.id === id);
+  if (!c) return;
+  navigate('detalle');
+
+  const isDerechos = currentProfile === 'derechos';
+  const isAdmin = currentProfile === 'administracion';
+  const isPub = currentProfile === 'publicacion';
+
+  // Semáforo publicación
+  let semaforo = '';
+  if (c.listoPublicacion === 'Sí') {
+    semaforo = `<div class="semaforo verde"><span class="semaforo-icon">🟢</span> Listo para publicación</div>`;
+  } else if (c.estado === 'vencido') {
+    semaforo = `<div class="semaforo rojo"><span class="semaforo-icon">🔴</span> Ventana expirada — no publicable</div>`;
+  } else if (c.estado === 'bloqueado') {
+    semaforo = `<div class="semaforo rojo"><span class="semaforo-icon">🔴</span> Bloqueado — ${c.incidencias[0] || 'sin validación'}</div>`;
+  } else {
+    semaforo = `<div class="semaforo naranja"><span class="semaforo-icon">🟡</span> Pendiente de validación — no publicable todavía</div>`;
+  }
+
+  // Incidencias
+  const incBlock = c.incidencias.length > 0
+    ? c.incidencias.map(i => `<div class="alert-item danger" style="margin-bottom:6px;"><span class="alert-icon">⚠</span><div class="alert-body"><div class="alert-title">${i}</div></div></div>`).join('')
+    : `<div style="color:var(--success);font-size:13px;font-weight:600;">✔ Sin incidencias activas</div>`;
+
+  // Sync DRM badge
+  const syncMap = {
+    ok: '<span class="badge badge-success">✔ Sincronizado</span>',
+    pendiente: '<span class="badge badge-warning">⏳ Pendiente</span>',
+    error: '<span class="badge badge-danger">✖ Error</span>',
+    noaplica: '<span class="badge badge-neutral">N/A</span>',
+  };
+
+  // Historial
+  const histHTML = c.historial.map(h => `
+    <div class="historial-item">
+      <div class="historial-dot"></div>
+      <div>
+        <div class="historial-text">${h.accion}</div>
+        <div class="historial-meta">${h.fecha} · ${h.perfil}</div>
+      </div>
+    </div>
+  `).join('');
+
+  // Botones contextuales
+  let botonesEstado = '';
+  if (isDerechos) {
+    botonesEstado = `
+      <button class="btn btn-primary" onclick="cambiarEstado('${id}', 'activo')">Marcar activo</button>
+      <button class="btn btn-secondary" onclick="cambiarEstado('${id}', 'pendiente')">Poner en revisión</button>
+      <button class="btn btn-danger btn-sm" onclick="cambiarEstado('${id}', 'bloqueado')">Bloquear</button>
+    `;
+  } else if (isAdmin) {
+    botonesEstado = `
+      <button class="btn btn-success" onclick="validarAdmin('${id}')">Validar imputación económica</button>
+    `;
+  } else if (isPub) {
+    botonesEstado = `
+      <button class="btn btn-secondary" onclick="solicitarRevision('${id}')">Solicitar revisión</button>
+      ${c.listoPublicacion === 'Sí' ? `<button class="btn btn-primary" onclick="marcarPublicacion('${id}')">Marcar para publicación en CMS</button>` : ''}
+    `;
+  }
+
+  // Tab: Derechos operativos
+  const tabDerechos = `
+    <div class="section-title">📋 Derechos digitales operativos</div>
+    <div class="field-grid">
+      <div class="field-group">
+        <div class="field-label">Territorio permitido</div>
+        ${isDerechos ? `<input class="field-value editable" data-field="territorio" value="${c.territorio}">` : `<div class="field-value">${c.territorio}</div>`}
+      </div>
+      <div class="field-group">
+        <div class="field-label">Territorios excluidos</div>
+        ${isDerechos ? `<input class="field-value editable" data-field="territoriosExcluidos" value="${c.territoriosExcluidos}">` : `<div class="field-value">${c.territoriosExcluidos}</div>`}
+      </div>
+      <div class="field-group">
+        <div class="field-label">Ventana OTT inicio</div>
+        ${isDerechos ? `<input class="field-value editable" data-field="ventanaInicio" type="date" value="${c.ventanaInicio}">` : `<div class="field-value">${c.ventanaInicio}</div>`}
+      </div>
+      <div class="field-group">
+        <div class="field-label">Ventana OTT fin</div>
+        ${isDerechos ? `<input class="field-value editable" data-field="ventanaFin" type="date" value="${c.ventanaFin}">` : `<div class="field-value">${c.ventanaFin}</div>`}
+      </div>
+      <div class="field-group">
+        <div class="field-label">Dispositivos permitidos</div>
+        ${isDerechos ? `<input class="field-value editable" data-field="dispositivos" value="${c.dispositivos}">` : `<div class="field-value">${c.dispositivos}</div>`}
+      </div>
+      <div class="field-group">
+        <div class="field-label">Máx. dispositivos</div>
+        <div class="field-value">${c.maxDispositivos}</div>
+      </div>
+      <div class="field-group">
+        <div class="field-label">Reproducción simultánea</div>
+        <div class="field-value">${c.simultaneous}</div>
+      </div>
+      <div class="field-group">
+        <div class="field-label">Descarga permitida</div>
+        <div class="field-value">${c.descarga === 'Sí' ? '✔ Sí' : '✖ No'}</div>
+      </div>
+      <div class="field-group">
+        <div class="field-label">Reproducción offline</div>
+        <div class="field-value">${c.offline === 'Sí' ? '✔ Sí' : '✖ No'}</div>
+      </div>
+      <div class="field-group">
+        <div class="field-label">Plantilla aplicada</div>
+        <div class="field-value"><span class="badge badge-primary">${c.plantilla}</span></div>
+      </div>
+    </div>
+    <div class="field-group mt-16">
+      <div class="field-label">Observaciones operativas</div>
+      ${isDerechos ? `<textarea class="field-value editable" data-field="observaciones" rows="2" style="resize:vertical;">${c.observaciones}</textarea>` : `<div class="field-value">${c.observaciones}</div>`}
+    </div>
+    ${isDerechos ? `<div class="mt-16"><button class="btn btn-primary" onclick="guardarCambios('${id}')">Guardar cambios</button></div>` : ''}
+  `;
+
+  // Tab: DRM
+  const tabDRM = `
+    <div class="section-title">🔒 Reglas DRM</div>
+    <div class="field-grid">
+      <div class="field-group">
+        <div class="field-label">DRM requerido</div>
+        <div class="field-value">${c.drmRequerido === 'Sí' ? '<span class="badge badge-danger">🔒 Sí — obligatorio</span>' : '<span class="badge badge-neutral">Sin DRM</span>'}</div>
+      </div>
+      <div class="field-group">
+        <div class="field-label">Sistemas aplicables</div>
+        <div class="field-value">${c.drmSistemas !== '—' ? c.drmSistemas.split(',').map(s => `<span class="badge badge-info" style="margin-right:4px;">${s.trim()}</span>`).join('') : '—'}</div>
+      </div>
+      <div class="field-group">
+        <div class="field-label">Nivel de protección</div>
+        <div class="field-value">${c.drmNivel}</div>
+      </div>
+      <div class="field-group">
+        <div class="field-label">Token temporal</div>
+        <div class="field-value">${c.tokenTemporal === 'Sí' ? '✔ Sí' : '✖ No'}</div>
+      </div>
+      <div class="field-group">
+        <div class="field-label">Geobloqueo</div>
+        <div class="field-value">${c.geobloqueo === 'Sí' ? '<span class="badge badge-warning">⚠ Activado</span>' : '<span class="badge badge-neutral">No</span>'}</div>
+      </div>
+      <div class="field-group">
+        <div class="field-label">Sincronización con player/DRM</div>
+        <div class="field-value">${syncMap[c.syncDRM]}</div>
+      </div>
+    </div>
+    <div class="field-group mt-16">
+      <div class="field-label">Notas técnicas</div>
+      ${isDerechos ? `<textarea class="field-value editable" data-field="notasTecnicas" rows="2" style="resize:vertical;">${c.notasTecnicas}</textarea>` : `<div class="field-value">${c.notasTecnicas}</div>`}
+    </div>
+    ${isPub ? `
+      <div class="restricted-block mt-16"><span class="icon">🔒</span> La configuración técnica de DRM es gestionada por el Área de Derechos. Solo lectura para este perfil.</div>
+    ` : ''}
+    ${isDerechos ? `
+      <div class="mt-16 flex-row">
+        <button class="btn btn-primary" onclick="guardarCambios('${id}')">Guardar notas DRM</button>
+        <button class="btn btn-secondary" onclick="simularSyncDRM('${id}')">Simular sincronización DRM</button>
+      </div>
+    ` : ''}
+
+    <!-- ===== PANEL DE EXPORTACIÓN DRM ===== -->
+    <div class="export-panel">
+      <div class="export-panel-header" onclick="toggleExportPanel(this)">
+        <div class="export-panel-title">
+          <span>⬇</span> Exportar configuración DRM
+          <span class="badge badge-primary" style="font-size:10px;">3 formatos disponibles</span>
+        </div>
+        <span style="font-size:11px; color:var(--text-muted);">▼ Expandir</span>
+      </div>
+      <div class="export-panel-body">
+        <div class="export-notice">
+          <span>⚠</span>
+          <span>Las exportaciones DRM <strong>no incluyen información económica ni contractual</strong> (importes, porcentajes de imputación, costes). Esos datos permanecen exclusivamente en el sistema interno. Esta capa sólo exporta parámetros técnicos de reproducción y restricción de acceso.</span>
+        </div>
+        <div class="export-grid" style="margin-top:14px;">
+
+          <!-- Export 1: Proveedor DRM -->
+          <div class="export-card">
+            <div class="export-card-title">
+              <span>🔐</span> Proveedor DRM
+            </div>
+            <div class="export-card-desc">
+              Especificación técnica de política de licencia para Widevine, FairPlay o PlayReady. Compatible con el formato estándar de configuración de políticas de estos sistemas.
+            </div>
+            <div class="export-card-fields">content_id
+drm_systems[]
+security_level
+license_duration_sec
+geo_restrictions[]
+device_restrictions[]
+offline_enabled
+max_devices
+concurrent_streams
+token_required
+window_start / window_end</div>
+            <div class="export-card-footer">
+              <span class="export-format-badge">JSON</span>
+              <button class="btn btn-primary btn-sm" onclick="exportarDRM('${id}', 'drm-provider')">Vista previa y exportar</button>
+            </div>
+          </div>
+
+          <!-- Export 2: CMS / OVP -->
+          <div class="export-card">
+            <div class="export-card-title">
+              <span>📡</span> CMS / OVP de la OTT
+            </div>
+            <div class="export-card-desc">
+              Configuración de activo para ingestión en el CMS/OVP. Define qué política DRM aplicar a cada asset_id y los parámetros de distribución (geobloqueo, descarga, dispositivos).
+            </div>
+            <div class="export-card-fields">asset_id_cms
+drm_required
+policy_ref_id
+geo_block / geo_territories[]
+download_enabled
+offline_enabled
+allowed_platforms[]
+window_start / window_end
+max_concurrent_streams</div>
+            <div class="export-card-footer">
+              <div style="display:flex;gap:6px;">
+                <span class="export-format-badge">JSON</span>
+                <span class="export-format-badge">CSV</span>
+              </div>
+              <button class="btn btn-primary btn-sm" onclick="exportarDRM('${id}', 'cms-json')">Vista previa y exportar</button>
+            </div>
+          </div>
+
+          <!-- Export 3: Auditoría interna -->
+          <div class="export-card">
+            <div class="export-card-title">
+              <span>📋</span> Auditoría interna
+            </div>
+            <div class="export-card-desc">
+              Documento de registro para validación interna de la configuración DRM. Incluye identificación del contenido, estado de sincronización, historial y responsable. No sale al exterior.
+            </div>
+            <div class="export-card-fields">ID contenido / ID CMS
+Título / Proveedor / Contrato
+Reglas DRM completas
+Estado de sincronización
+Incidencias abiertas
+Responsable / Fecha
+Historial de cambios</div>
+            <div class="export-card-footer">
+              <span class="export-format-badge">TXT / PDF</span>
+              <button class="btn btn-secondary btn-sm" onclick="exportarDRM('${id}', 'auditoria')">Vista previa y exportar</button>
+            </div>
+          </div>
+
+        </div>
+
+        ${c.drmRequerido !== 'Sí' ? `
+          <div class="restricted-block" style="margin-top:4px;">
+            <span class="icon">ℹ</span>
+            Este contenido no requiere DRM. La exportación de proveedor DRM generará un payload vacío/nulo. La exportación para CMS sí es aplicable para confirmar la ausencia de restricciones.
+          </div>
+        ` : ''}
+
+        ${c.syncDRM === 'pendiente' || c.syncDRM === 'error' ? `
+          <div class="alert-item warning" style="margin-top:10px;">
+            <span class="alert-icon">⚠</span>
+            <div class="alert-body">
+              <div class="alert-title">Exportación con advertencia</div>
+              <div class="alert-desc">La sincronización DRM está en estado <strong>${c.syncDRM}</strong>. Los datos exportados reflejan la configuración definida en esta herramienta, pero no están confirmados como activos en el sistema DRM del player. Verificar antes de usar en producción.</div>
+            </div>
+          </div>
+        ` : ''}
+
+      </div>
+    </div>
+  `;
+
+  // Tab: Economía
+  const tabEcon = isPub
+    ? `<div class="restricted-block"><span class="icon">🔒</span> La información económica no está disponible para el perfil Publicación. Contacte con el Área de Administración para consultas de coste.</div>`
+    : `
+    <div class="section-title">💶 Información económica</div>
+    <div class="field-grid">
+      <div class="field-group">
+        <div class="field-label">Valor contrato total</div>
+        ${isAdmin ? `<input class="field-value editable" value="${c.valorContrato} €">` : `<div class="field-value">${c.valorContrato} €</div>`}
+      </div>
+      <div class="field-group">
+        <div class="field-label">% imputado a digital</div>
+        ${isAdmin ? `<input class="field-value editable" value="${c.pctDigital}">` : `<div class="field-value">${c.pctDigital}</div>`}
+      </div>
+      <div class="field-group">
+        <div class="field-label">Valor digital estimado</div>
+        <div class="field-value">${c.valorDigital !== '—' ? c.valorDigital + ' €' : '—'}</div>
+      </div>
+      <div class="field-group">
+        <div class="field-label">Modelo de amortización</div>
+        ${isAdmin ? `<input class="field-value editable" value="${c.amortizacion}">` : `<div class="field-value ${isDerechos ? 'locked' : ''}">${c.amortizacion}</div>`}
+      </div>
+      <div class="field-group">
+        <div class="field-label">Inicio amortización</div>
+        ${isAdmin ? `<input class="field-value editable" type="date" value="${c.inicioAmortizacion}">` : `<div class="field-value ${isDerechos ? 'locked' : ''}">${c.inicioAmortizacion}</div>`}
+      </div>
+      <div class="field-group">
+        <div class="field-label">Coste mensual estimado</div>
+        ${isAdmin ? `<input class="field-value editable" value="${c.costeMensual} €">` : `<div class="field-value ${isDerechos ? 'locked' : ''}">${c.costeMensual !== '—' ? c.costeMensual + ' €' : '—'}</div>`}
+      </div>
+      <div class="field-group">
+        <div class="field-label">Centro de coste</div>
+        ${isAdmin ? `<input class="field-value editable" value="${c.centroCoste}">` : `<div class="field-value">${c.centroCoste}</div>`}
+      </div>
+    </div>
+    <div class="field-group mt-16">
+      <div class="field-label">Observaciones administrativas</div>
+      ${isAdmin ? `<textarea class="field-value editable" rows="2" style="resize:vertical;">${c.observacionesAdmin}</textarea>` : `<div class="field-value ${isDerechos ? 'locked' : ''}">${c.observacionesAdmin}</div>`}
+    </div>
+    ${isDerechos ? `<div class="restricted-block mt-16"><span class="icon">ℹ</span> Los campos de amortización y coste son de solo lectura para el perfil Derechos. Contacte con Administración para modificaciones.</div>` : ''}
+    ${isAdmin ? `<div class="mt-16 flex-row"><button class="btn btn-success" onclick="validarAdmin('${id}')">✔ Validar imputación económica</button><button class="btn btn-primary" onclick="guardarCambios('${id}')">Guardar</button></div>` : ''}
+  `;
+
+  // Tab: Estado
+  const tabEstado = `
+    <div class="section-title">📊 Estado y control</div>
+    ${semaforo}
+    <div class="field-grid">
+      <div class="field-group">
+        <div class="field-label">Estado general</div>
+        <div class="field-value">${estadoBadge(c.estado)}</div>
+      </div>
+      <div class="field-group">
+        <div class="field-label">Validación de derechos</div>
+        <div class="field-value">${c.validacionDerechos === 'Sí' ? '<span class="badge badge-success">✔ Validado</span>' : '<span class="badge badge-warning">Pendiente</span>'}</div>
+      </div>
+      <div class="field-group">
+        <div class="field-label">Validación administrativa</div>
+        <div class="field-value">${c.validacionAdmin === 'Sí' ? '<span class="badge badge-success">✔ Validado</span>' : c.validacionAdmin === 'Pendiente revisión' ? '<span class="badge badge-warning">En revisión</span>' : '<span class="badge badge-neutral">Pendiente</span>'}</div>
+      </div>
+      <div class="field-group">
+        <div class="field-label">Responsable actual</div>
+        <div class="field-value">${c.responsable}</div>
+      </div>
+      <div class="field-group">
+        <div class="field-label">Último editor</div>
+        <div class="field-value">${c.ultimoEditor}</div>
+      </div>
+    </div>
+    <div class="mt-16">
+      <div class="section-title" style="margin-top:16px;">⚠ Incidencias abiertas</div>
+      ${incBlock}
+    </div>
+    <div class="mt-16 flex-row">${botonesEstado}</div>
+    <div class="mt-16">
+      <div class="section-title" style="margin-top:16px;">🕐 Historial</div>
+      <div class="historial-list">${histHTML}</div>
+    </div>
+  `;
+
+  // Tab: Publicación (solo para perfil publicación — acceso rápido)
+  const tabPub = `
+    <div class="section-title">📡 Vista de publicación</div>
+    ${semaforo}
+    <div class="pub-checklist">
+      <div class="pub-check-item">
+        <span class="pub-check-icon">${ventanaVigente(c) ? '✅' : '❌'}</span>
+        <div>
+          <div class="pub-check-label">Ventana activa</div>
+          <div class="pub-check-val">${c.ventanaInicio} → ${c.ventanaFin}</div>
+        </div>
+      </div>
+      <div class="pub-check-item">
+        <span class="pub-check-icon">${c.drmRequerido === 'Sí' ? '🔒' : '🔓'}</span>
+        <div>
+          <div class="pub-check-label">DRM requerido</div>
+          <div class="pub-check-val">${c.drmRequerido === 'Sí' ? 'Sí — ' + c.drmSistemas : 'No'}</div>
+        </div>
+      </div>
+      <div class="pub-check-item">
+        <span class="pub-check-icon">${c.geobloqueo === 'Sí' ? '⚠️' : '🌍'}</span>
+        <div>
+          <div class="pub-check-label">Geobloqueo</div>
+          <div class="pub-check-val">${c.geobloqueo === 'Sí' ? 'Sí — ' + c.territorio : 'Sin restricción'}</div>
+        </div>
+      </div>
+      <div class="pub-check-item">
+        <span class="pub-check-icon">${c.descarga === 'Sí' ? '⬇️' : '🚫'}</span>
+        <div>
+          <div class="pub-check-label">Descarga</div>
+          <div class="pub-check-val">${c.descarga}</div>
+        </div>
+      </div>
+      <div class="pub-check-item">
+        <span class="pub-check-icon">📱</span>
+        <div>
+          <div class="pub-check-label">Dispositivos</div>
+          <div class="pub-check-val">${c.dispositivos}</div>
+        </div>
+      </div>
+      <div class="pub-check-item">
+        <span class="pub-check-icon">${c.validacionDerechos === 'Sí' ? '✅' : '❌'}</span>
+        <div>
+          <div class="pub-check-label">Validación derechos</div>
+          <div class="pub-check-val">${c.validacionDerechos}</div>
+        </div>
+      </div>
+    </div>
+    ${c.incidencias.length > 0 ? `<div class="mt-16"><div class="section-title">⚠ Incidencias</div>${incBlock}</div>` : ''}
+    <div class="mt-16 flex-row">
+      <button class="btn btn-secondary" onclick="solicitarRevision('${id}')">Solicitar revisión a Derechos</button>
+      ${c.listoPublicacion === 'Sí' ? `<button class="btn btn-primary" onclick="marcarPublicacion('${id}')">Marcar para publicación en CMS</button>` : `<button class="btn btn-primary" disabled>No publicable — pendiente validación</button>`}
+    </div>
+  `;
+
+  // Determinar tabs visibles según perfil
+  const tabs = isPub
+    ? [
+        { id: 'id', label: 'Identificación' },
+        { id: 'pub', label: '📡 Publicación' },
+        { id: 'estado', label: 'Estado' },
+      ]
+    : isAdmin
+    ? [
+        { id: 'id', label: 'Identificación' },
+        { id: 'econ', label: '💶 Economía' },
+        { id: 'derechos', label: 'Derechos operativos' },
+        { id: 'estado', label: 'Estado' },
+      ]
+    : [
+        { id: 'id', label: 'Identificación' },
+        { id: 'derechos', label: 'Derechos operativos' },
+        { id: 'drm', label: '🔒 DRM' },
+        { id: 'econ', label: 'Economía' },
+        { id: 'estado', label: 'Estado' },
+      ];
+
+  const tabNav = tabs.map((t, i) => `<button class="tab-btn ${i === 0 ? 'active' : ''}" onclick="switchTab('tab-${t.id}', this)">${t.label}</button>`).join('');
+
+  const tabIdContent = `
+    <div class="section-title">🗂 Identificación</div>
+    <div class="field-grid">
+      <div class="field-group"><div class="field-label">ID contenido</div><div class="field-value">${c.id}</div></div>
+      <div class="field-group"><div class="field-label">ID CMS OTT</div><div class="field-value muted">${c.cmsId}</div></div>
+      <div class="field-group"><div class="field-label">Título</div><div class="field-value"><strong>${c.titulo}</strong></div></div>
+      <div class="field-group"><div class="field-label">Tipo de contenido</div><div class="field-value">${c.tipo}</div></div>
+      <div class="field-group"><div class="field-label">Marca / Plataforma</div><div class="field-value">${c.marca}</div></div>
+      <div class="field-group"><div class="field-label">Proveedor</div><div class="field-value">${c.proveedor}</div></div>
+      <div class="field-group"><div class="field-label">Contrato asociado</div><div class="field-value"><span class="link-cell" onclick="openDetalleContrato('${c.contrato}')">${c.contrato}</span></div></div>
+      <div class="field-group"><div class="field-label">Fecha de alta</div><div class="field-value">${c.fechaAlta}</div></div>
+      <div class="field-group"><div class="field-label">Última actualización</div><div class="field-value">${c.ultimaActualizacion}</div></div>
+    </div>
+  `;
+
+  const tabContent = {
+    'tab-id': tabIdContent,
+    'tab-derechos': tabDerechos,
+    'tab-drm': tabDRM,
+    'tab-econ': tabEcon,
+    'tab-estado': tabEstado,
+    'tab-pub': tabPub,
+  };
+
+  const tabPanels = tabs.map((t, i) => `
+    <div id="tab-${t.id}" class="tab-panel ${i === 0 ? 'active' : ''}">
+      ${tabContent['tab-' + t.id] || ''}
+    </div>
+  `).join('');
+
+  document.getElementById('detalle-inner').innerHTML = `
+    <div class="page-header">
+      <div>
+        <h1>${c.titulo}</h1>
+        <p>${c.tipo} · ${c.proveedor} · <span style="color:var(--text-muted)">${c.id}</span> · ${estadoBadge(c.estado)}</p>
+      </div>
+      <div class="flex-row">
+        <span class="badge badge-neutral">Editado por: ${c.ultimoEditor}</span>
+      </div>
+    </div>
+    <div class="card">
+      <div class="tab-nav">${tabNav}</div>
+      ${tabPanels}
+    </div>
+  `;
+}
+
+function ventanaVigente(c) {
+  const hoy = new Date('2025-04-08');
+  const inicio = new Date(c.ventanaInicio);
+  const fin = new Date(c.ventanaFin);
+  return hoy >= inicio && hoy <= fin;
+}
+
+function switchTab(tabId, btn) {
+  const container = btn.closest('.card');
+  container.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  container.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  btn.classList.add('active');
+  const panel = document.getElementById(tabId);
+  if (panel) panel.classList.add('active');
+}
+
+// ===== ACCIONES SIMULADAS =====
+function guardarCambios(id) {
+  // If called from a detail view, collect editable field values and persist
+  if (id) {
+    const c = contenidos.find(x => x.id === id);
+    if (c) {
+      // Collect all editable inputs/textareas within the current tab panels
+      const container = document.getElementById('detalle-inner');
+      if (container) {
+        const inputs = container.querySelectorAll('input.editable, textarea.editable, select.editable');
+        inputs.forEach(inp => {
+          const fieldId = inp.dataset.field;
+          if (fieldId && c.hasOwnProperty(fieldId)) {
+            c[fieldId] = inp.value;
+          }
+        });
+        // Update timestamps and historial
+        const hoy = new Date().toISOString().slice(0,10);
+        c.ultimaActualizacion = hoy;
+        c.ultimoEditor = profileLabel(currentProfile);
+        c.historial.unshift({ fecha: hoy, accion: 'Ficha actualizada desde perfil ' + profileLabel(currentProfile), perfil: profileLabel(currentProfile) });
+      }
+      saveData();
+    }
+  } else {
+    saveData();
+  }
+  showToast('Cambios guardados correctamente', 'success');
+}
+function cambiarEstado(id, estado) {
+  const c = contenidos.find(x => x.id === id);
+  if (c) { c.estado = estado; c.ultimaActualizacion = new Date().toISOString().slice(0,10); saveData(); openDetalle(id); showToast('Estado actualizado: ' + estado, 'success'); }
+}
+function validarAdmin(id) {
+  const c = contenidos.find(x => x.id === id);
+  if (c) { c.validacionAdmin = 'Sí'; c.ultimaActualizacion = new Date().toISOString().slice(0,10); saveData(); openDetalle(id); showToast('Imputación económica validada', 'success'); }
+}
+function solicitarRevision(id) {
+  showToast('Solicitud de revisión enviada al Área de Derechos', 'info');
+}
+function marcarPublicacion(id) {
+  showToast('Marcado para publicación en CMS OTT', 'success');
+}
+function simularSyncDRM(id) {
+  const c = contenidos.find(x => x.id === id);
+  if (c) { c.syncDRM = 'ok'; c.ultimaActualizacion = new Date().toISOString().slice(0,10); saveData(); openDetalle(id); showToast('Sincronización DRM completada (simulada)', 'success'); }
+}
+
+// ===== CONTRATOS =====
+function renderContratos() {
+  const isAdmin = currentProfile === 'administracion';
+  const isPub = currentProfile === 'publicacion';
+
+  const tbody = document.getElementById('contratos-tbody');
+  tbody.innerHTML = contratos.map(c => `
+    <tr>
+      <td><span class="link-cell" onclick="openDetalleContrato('${c.id}')">${c.id}</span></td>
+      <td class="muted">${c.proveedor}</td>
+      <td class="muted" style="max-width:200px;">${c.objeto}</td>
+      <td>${isPub ? '<span class="badge badge-neutral">Restringido</span>' : c.importe}</td>
+      <td>${isPub ? '—' : c.pctDigital}</td>
+      <td>${isPub ? '—' : c.valorDigital}</td>
+      <td class="muted">${c.inicio}</td>
+      <td class="muted">${c.fin}</td>
+      <td class="muted">${c.contenidos.length}</td>
+      <td>${contratoEstadoBadge(c.estado, c.alerta)}</td>
+      <td><button class="btn btn-secondary btn-sm" onclick="openDetalleContrato('${c.id}')">Ver</button></td>
+    </tr>
+  `).join('');
+}
+
+function contratoEstadoBadge(estado, alerta) {
+  if (estado === 'activo') return '<span class="badge badge-success">● Activo</span>';
+  if (estado === 'proximo-vencimiento') return `<span class="badge badge-warning">⚠ ${alerta}</span>`;
+  if (estado === 'vencido') return '<span class="badge badge-danger">● Vencido</span>';
+  return estado;
+}
+
+function openDetalleContrato(id) {
+  const c = contratos.find(x => x.id === id);
+  if (!c) return;
+  navigate('detalle-contrato');
+
+  const isPub = currentProfile === 'publicacion';
+  const isAdmin = currentProfile === 'administracion';
+
+  const contenidosRel = contenidos.filter(x => c.contenidos.includes(x.id));
+  const contenidosHTML = contenidosRel.map(x => `
+    <tr>
+      <td><span class="link-cell" onclick="openDetalle('${x.id}')">${x.id}</span></td>
+      <td>${x.titulo}</td>
+      <td class="muted">${x.tipo}</td>
+      <td>${estadoBadge(x.estado)}</td>
+      <td>${x.drm === 'Sí' ? '<span class="badge badge-info">DRM</span>' : '<span class="badge badge-neutral">Sin DRM</span>'}</td>
+    </tr>
+  `).join('');
+
+  document.getElementById('detalle-contrato-inner').innerHTML = `
+    <div class="page-header">
+      <div>
+        <h1>Contrato: ${c.id}</h1>
+        <p>${c.proveedor} · ${c.objeto}</p>
+      </div>
+      ${contratoEstadoBadge(c.estado, c.alerta)}
+    </div>
+    <div style="display:grid; grid-template-columns:1fr 1fr; gap:20px;">
+      <div class="card">
+        <div class="card-header"><h3>📋 Datos del contrato</h3></div>
+        <div class="card-body">
+          <div class="field-grid">
+            <div class="field-group"><div class="field-label">ID Contrato</div><div class="field-value">${c.id}</div></div>
+            <div class="field-group"><div class="field-label">Proveedor</div><div class="field-value">${c.proveedor}</div></div>
+            <div class="field-group"><div class="field-label">Objeto</div><div class="field-value">${c.objeto}</div></div>
+            <div class="field-group"><div class="field-label">Fecha inicio</div><div class="field-value">${c.inicio}</div></div>
+            <div class="field-group"><div class="field-label">Fecha fin</div><div class="field-value">${c.fin}</div></div>
+            <div class="field-group"><div class="field-label">Estado</div><div class="field-value">${contratoEstadoBadge(c.estado, c.alerta)}</div></div>
+          </div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-header"><h3>💶 Datos económicos</h3></div>
+        <div class="card-body">
+          ${isPub
+            ? '<div class="restricted-block"><span class="icon">🔒</span> Información económica no disponible para el perfil Publicación.</div>'
+            : `<div class="field-grid">
+                <div class="field-group"><div class="field-label">Importe total</div><div class="field-value"><strong>${c.importe}</strong></div></div>
+                <div class="field-group"><div class="field-label">% Digital</div><div class="field-value">${c.pctDigital}</div></div>
+                <div class="field-group"><div class="field-label">Valor digital</div><div class="field-value">${c.valorDigital}</div></div>
+              </div>
+              ${c.alerta ? `<div class="alert-item warning mt-16"><span class="alert-icon">⚠</span><div class="alert-body"><div class="alert-title">${c.alerta}</div><div class="alert-desc">Revisar condiciones o iniciar proceso de renovación.</div></div></div>` : ''}
+              ${isAdmin ? '<div class="mt-16"><button class="btn btn-primary" onclick="showToast(\'Datos económicos guardados\',\'success\')">Guardar datos económicos</button></div>' : ''}
+            `
+          }
+        </div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-header"><h3>📦 Contenidos asociados</h3></div>
+      <div class="table-wrapper">
+        <table>
+          <thead><tr><th>ID</th><th>Título</th><th>Tipo</th><th>Estado</th><th>DRM</th></tr></thead>
+          <tbody>${contenidosHTML}</tbody>
+        </table>
+      </div>
+    </div>
+  `;
+}
+
+// ===== EXPORTACIÓN DRM =====
+
+function toggleExportPanel(header) {
+  const body = header.nextElementSibling;
+  const arrow = header.querySelector('span:last-child');
+  body.classList.toggle('open');
+  arrow.textContent = body.classList.contains('open') ? '▲ Contraer' : '▼ Expandir';
+}
+
+function exportarDRM(contentId, tipo) {
+  const c = contenidos.find(x => x.id === contentId);
+  if (!c) return;
+
+  // Construir payload según destinatario
+  let payload = '';
+  let titulo = '';
+  let formato = '';
+  let filename = '';
+  const ts = new Date().toISOString();
+
+  // Mapeo de sistemas DRM a identificadores técnicos estándar
+  const drmSystemIds = {
+    'Widevine': 'com.widevine.alpha',
+    'FairPlay': 'com.apple.fps',
+    'PlayReady': 'com.microsoft.playready'
+  };
+  const sistemas = c.drmSistemas !== '—'
+    ? c.drmSistemas.split(',').map(s => drmSystemIds[s.trim()] || s.trim())
+    : [];
+
+  const securityLevel = c.drmNivel.includes('L1') ? 'SW_SECURE_DECODE'
+    : c.drmNivel.includes('L3') ? 'SW_SECURE_CRYPTO'
+    : c.drmNivel === '—' ? null : 'SW_SECURE_CRYPTO';
+
+  const geoList = c.geobloqueo === 'Sí'
+    ? [{ allow: [c.territorio], deny: c.territoriosExcluidos !== '—' ? c.territoriosExcluidos.split(',').map(t => t.trim()) : [] }]
+    : [];
+
+  const deviceList = c.dispositivos !== 'Todos los dispositivos'
+    ? c.dispositivos.split(',').map(d => d.trim().toLowerCase().replace(/ /g,'_'))
+    : ['smart_tv', 'web', 'ios', 'android', 'desktop'];
+
+  // ── 1. JSON Proveedor DRM ──
+  if (tipo === 'drm-provider') {
+    titulo = 'Exportación para proveedor DRM';
+    formato = 'JSON';
+    filename = `drm-policy_${c.id}_${Date.now()}.json`;
+    const obj = {
+      _meta: {
+        source: 'GDR·OTT — Gestión de Derechos Digitales',
+        export_type: 'drm_provider_policy',
+        generated_at: ts,
+        generated_by: 'Perfil: ' + profileLabel(currentProfile),
+        content_id_internal: c.id,
+        cms_asset_id: c.cmsId,
+        WARNING: 'Este archivo no contiene información económica ni contractual.'
+      },
+      content_id: c.cmsId,
+      title_ref: c.titulo,
+      drm_required: c.drmRequerido === 'Sí',
+      drm_systems: sistemas,
+      license_policy: {
+        security_level: securityLevel,
+        license_duration_seconds: c.tokenTemporal === 'Sí' ? 3600 : 86400,
+        rental_duration_seconds: null,
+        playback_duration_seconds: null,
+        token_required: c.tokenTemporal === 'Sí'
+      },
+      playback_restrictions: {
+        offline_enabled: c.offline === 'Sí',
+        download_enabled: c.descarga === 'Sí',
+        max_devices: c.maxDispositivos === 'Ilimitado' ? null : parseInt(c.maxDispositivos) || null,
+        max_concurrent_streams: c.simultaneous === 'Sin límite' ? null : parseInt(c.simultaneous) || null,
+        allowed_device_types: deviceList
+      },
+      geo_restrictions: geoList,
+      window: {
+        start: c.ventanaInicio,
+        end: c.ventanaFin
+      },
+      sync_status: c.syncDRM,
+      notes: c.notasTecnicas
+    };
+    payload = JSON.stringify(obj, null, 2);
+  }
+
+  // ── 2. JSON CMS/OVP ──
+  else if (tipo === 'cms-json') {
+    titulo = 'Exportación para CMS / OVP de la OTT';
+    formato = 'JSON';
+    filename = `cms-config_${c.id}_${Date.now()}.json`;
+    const obj = {
+      _meta: {
+        source: 'GDR·OTT — Gestión de Derechos Digitales',
+        export_type: 'cms_ovp_asset_config',
+        generated_at: ts,
+        generated_by: 'Perfil: ' + profileLabel(currentProfile),
+        WARNING: 'Este archivo no contiene información económica ni contractual.'
+      },
+      asset_id_cms: c.cmsId,
+      asset_id_internal: c.id,
+      title: c.titulo,
+      content_type: c.tipo,
+      drm_required: c.drmRequerido === 'Sí',
+      drm_policy_ref: c.drmRequerido === 'Sí' ? `policy_${c.id.toLowerCase()}` : null,
+      geo_block: {
+        enabled: c.geobloqueo === 'Sí',
+        allowed_territories: c.geobloqueo === 'Sí' ? [c.territorio] : [],
+        denied_territories: c.geobloqueo === 'Sí' && c.territoriosExcluidos !== '—'
+          ? c.territoriosExcluidos.split(',').map(t => t.trim())
+          : []
+      },
+      distribution: {
+        download_enabled: c.descarga === 'Sí',
+        offline_enabled: c.offline === 'Sí',
+        allowed_platforms: deviceList,
+        max_concurrent_streams: c.simultaneous === 'Sin límite' ? null : parseInt(c.simultaneous) || null
+      },
+      window: {
+        start: c.ventanaInicio,
+        end: c.ventanaFin,
+        active: ventanaVigente(c)
+      },
+      publication_status: c.listoPublicacion === 'Sí' ? 'ready' : 'blocked',
+      last_updated: c.ultimaActualizacion
+    };
+    payload = JSON.stringify(obj, null, 2);
+  }
+
+  // ── 3. Auditoría interna ──
+  else if (tipo === 'auditoria') {
+    titulo = 'Documento de auditoría interna DRM';
+    formato = 'TXT';
+    filename = `auditoria-drm_${c.id}_${Date.now()}.txt`;
+    const sep = '─'.repeat(60);
+    const hist = c.historial.map(h => `  ${h.fecha}  [${h.perfil}]  ${h.accion}`).join('\n');
+    const inc = c.incidencias.length > 0 ? c.incidencias.map(i => '  ⚠ ' + i).join('\n') : '  Ninguna';
+    payload = `GDR·OTT — AUDITORÍA INTERNA DE CONFIGURACIÓN DRM
+${sep}
+Generado:    ${ts}
+Perfil:      ${profileLabel(currentProfile)}
+${sep}
+
+IDENTIFICACIÓN
+  ID interno:     ${c.id}
+  ID CMS OTT:     ${c.cmsId}
+  Título:         ${c.titulo}
+  Tipo:           ${c.tipo}
+  Proveedor:      ${c.proveedor}
+  Contrato:       ${c.contrato}
+  Fecha alta:     ${c.fechaAlta}
+  Última actua.:  ${c.ultimaActualizacion}
+
+${sep}
+CONFIGURACIÓN DRM
+  DRM requerido:     ${c.drmRequerido}
+  Sistemas:          ${c.drmSistemas}
+  Nivel protección:  ${c.drmNivel}
+  Token temporal:    ${c.tokenTemporal}
+  Geobloqueo:        ${c.geobloqueo}
+  Territorio:        ${c.territorio}
+  Excluidos:         ${c.territoriosExcluidos}
+  Sync. player/DRM:  ${c.syncDRM.toUpperCase()}
+
+${sep}
+RESTRICCIONES DE REPRODUCCIÓN
+  Ventana inicio:       ${c.ventanaInicio}
+  Ventana fin:          ${c.ventanaFin}
+  Dispositivos:         ${c.dispositivos}
+  Máx. dispositivos:    ${c.maxDispositivos}
+  Simultáneos:          ${c.simultaneous}
+  Descarga:             ${c.descarga}
+  Offline:              ${c.offline}
+
+${sep}
+ESTADO
+  Estado general:         ${c.estado.toUpperCase()}
+  Listo para publicación: ${c.listoPublicacion}
+  Validación derechos:    ${c.validacionDerechos}
+  Responsable:            ${c.responsable}
+
+${sep}
+INCIDENCIAS ACTIVAS
+${inc}
+
+${sep}
+HISTORIAL
+${hist}
+
+${sep}
+NOTAS TÉCNICAS
+  ${c.notasTecnicas}
+
+${sep}
+AVISO LEGAL
+  Este documento es de uso interno exclusivo de la organización.
+  No contiene información económica, contractual ni de imputación de costes.
+  Los datos aquí reflejados proceden del sistema GDR·OTT y deben ser
+  verificados contra los sistemas DRM y CMS antes de cualquier uso en producción.
+${sep}`;
+  }
+
+  mostrarModalExportacion(titulo, formato, filename, payload, tipo);
+}
+
+function mostrarModalExportacion(titulo, formato, filename, payload, tipo) {
+  // Eliminar modal anterior si existe
+  const prev = document.getElementById('export-modal');
+  if (prev) prev.remove();
+
+  const modal = document.createElement('div');
+  modal.id = 'export-modal';
+  modal.className = 'export-preview-modal';
+
+  const colorMap = { 'drm-provider': '#c8e6c9', 'cms-json': '#b3e5fc', 'auditoria': '#ffe0b2' };
+  const codeColor = colorMap[tipo] || '#c8e6c9';
+
+  modal.innerHTML = `
+    <div class="export-preview-box">
+      <div class="export-preview-header">
+        <div>
+          <h3>⬇ ${titulo}</h3>
+          <div class="export-preview-meta">Formato: ${formato} · Archivo: ${filename}</div>
+        </div>
+        <button class="btn btn-secondary btn-sm" onclick="document.getElementById('export-modal').remove()">✖ Cerrar</button>
+      </div>
+      <div class="export-preview-code" style="color:${codeColor};">${escapeHtml(payload)}</div>
+      <div class="export-preview-footer">
+        <div class="notice">ℹ Sin datos económicos ni contractuales en este archivo.</div>
+        <div class="flex-row">
+          <button class="btn btn-secondary btn-sm" onclick="copiarExport()">📋 Copiar</button>
+          <button class="btn btn-primary btn-sm" onclick="descargarExport('${filename}')">⬇ Descargar ${formato}</button>
+        </div>
+      </div>
+    </div>
+  `;
+
+  // Guardar payload en variable global temporal para copiar/descargar
+  window._exportPayload = payload;
+  window._exportFilename = filename;
+
+  document.body.appendChild(modal);
+
+  // Cerrar al hacer clic fuera
+  modal.addEventListener('click', function(e) {
+    if (e.target === modal) modal.remove();
+  });
+}
+
+function copiarExport() {
+  if (!window._exportPayload) return;
+  navigator.clipboard.writeText(window._exportPayload)
+    .then(() => showToast('Contenido copiado al portapapeles', 'success'))
+    .catch(() => showToast('No se pudo copiar — use el botón de descarga', 'warning'));
+}
+
+function descargarExport(filename) {
+  if (!window._exportPayload) return;
+  const blob = new Blob([window._exportPayload], { type: 'text/plain;charset=utf-8' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = filename || 'exportacion-drm.txt';
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+  showToast('Archivo descargado: ' + (filename || 'exportacion-drm.txt'), 'success');
+  document.getElementById('export-modal')?.remove();
+}
+
+function escapeHtml(str) {
+  return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+// ===== TOASTS =====
+function showToast(msg, type = 'info') {
+  const container = document.getElementById('toast-container');
+  const toast = document.createElement('div');
+  toast.className = `toast ${type}`;
+  const icons = { info: 'ℹ', success: '✔', warning: '⚠', danger: '✖' };
+  toast.innerHTML = `<span>${icons[type] || 'ℹ'}</span> ${msg}`;
+  container.appendChild(toast);
+  setTimeout(() => { toast.style.opacity = '0'; toast.style.transition = 'opacity 0.4s'; setTimeout(() => toast.remove(), 400); }, 3500);
+}
+
+
+// ===== ALTA DE CONTENIDO =====
+
+function abrirFormularioAlta() {
+  if (currentProfile !== 'derechos') {
+    showToast('Solo el perfil Derechos puede dar de alta contenidos', 'warning');
+    return;
+  }
+  document.getElementById('modal-alta').classList.remove('hidden');
+  document.getElementById('form-alta').reset();
+  // Generar ID sugerido
+  const num = String(contenidos.length + 1).padStart(3, '0');
+  document.getElementById('alta-id').value = 'C' + num;
+  document.getElementById('alta-fecha').value = new Date().toISOString().slice(0,10);
+}
+
+function cerrarFormularioAlta() {
+  document.getElementById('modal-alta').classList.add('hidden');
+}
+
+function guardarNuevoContenido() {
+  const get = id => document.getElementById(id).value.trim();
+
+  // Validación de campos obligatorios
+  const obligatorios = [
+    { id: 'alta-titulo', label: 'Título' },
+    { id: 'alta-tipo', label: 'Tipo de contenido' },
+    { id: 'alta-proveedor', label: 'Proveedor' },
+    { id: 'alta-contrato', label: 'Contrato' },
+    { id: 'alta-ventana-inicio', label: 'Ventana inicio' },
+    { id: 'alta-ventana-fin', label: 'Ventana fin' },
+    { id: 'alta-territorio', label: 'Territorio' },
+  ];
+
+  for (const campo of obligatorios) {
+    if (!get(campo.id)) {
+      showToast('Campo obligatorio vacío: ' + campo.label, 'danger');
+      document.getElementById(campo.id).focus();
+      document.getElementById(campo.id).style.borderColor = 'var(--danger)';
+      setTimeout(() => { document.getElementById(campo.id).style.borderColor = ''; }, 3000);
+      return;
+    }
+  }
+
+  const drmReq = get('alta-drm-requerido');
+  const hoy = new Date().toISOString().slice(0, 10);
+  const idNuevo = get('alta-id') || ('C' + String(contenidos.length + 1).padStart(3, '0'));
+
+  const nuevoContenido = {
+    id: idNuevo,
+    titulo: get('alta-titulo'),
+    tipo: get('alta-tipo'),
+    marca: get('alta-marca') || 'OTT Principal',
+    proveedor: get('alta-proveedor'),
+    contrato: get('alta-contrato'),
+    ventanaInicio: get('alta-ventana-inicio'),
+    ventanaFin: get('alta-ventana-fin'),
+    drm: drmReq === 'Sí' ? 'Sí' : 'No',
+    descarga: get('alta-descarga'),
+    offline: get('alta-offline'),
+    estado: 'pendiente',
+    responsable: 'Área de Derechos',
+    ultimoEditor: 'Derechos',
+    cmsId: get('alta-cms-id') || '—',
+    fechaAlta: hoy,
+    ultimaActualizacion: hoy,
+    territorio: get('alta-territorio'),
+    territoriosExcluidos: get('alta-territorios-excluidos') || '—',
+    dispositivos: get('alta-dispositivos') || 'Web, Smart TV, iOS, Android',
+    maxDispositivos: get('alta-max-dispositivos') || '4',
+    simultaneous: get('alta-simultaneous') || '2',
+    observaciones: get('alta-observaciones') || '',
+    plantilla: get('alta-plantilla') || 'Estándar',
+    drmRequerido: drmReq,
+    drmSistemas: drmReq === 'Sí' ? (get('alta-drm-sistemas') || 'Widevine') : '—',
+    drmNivel: drmReq === 'Sí' ? (get('alta-drm-nivel') || 'Medio (L3)') : '—',
+    tokenTemporal: drmReq === 'Sí' ? (get('alta-token-temporal') || 'Sí') : 'No',
+    geobloqueo: get('alta-geobloqueo'),
+    notasTecnicas: get('alta-notas-tecnicas') || '',
+    syncDRM: drmReq === 'Sí' ? 'pendiente' : 'noaplica',
+    valorContrato: '—',
+    pctDigital: '—',
+    valorDigital: '—',
+    amortizacion: '—',
+    inicioAmortizacion: '—',
+    costeMensual: '—',
+    centroCoste: '—',
+    observacionesAdmin: 'Pendiente de imputación económica por Administración.',
+    validacionDerechos: 'No',
+    validacionAdmin: 'No',
+    listoPublicacion: 'No',
+    incidencias: ['Pendiente de validación de derechos', 'Sin imputación económica asignada'],
+    historial: [
+      { fecha: hoy, accion: 'Alta de ficha en GDR·OTT', perfil: 'Derechos' }
+    ]
+  };
+
+  // Añadir al array y persistir
+  contenidos.push(nuevoContenido);
+  saveData();
+  cerrarFormularioAlta();
+  actualizarKPIs();
+  showToast('Contenido "' + nuevoContenido.titulo + '" dado de alta correctamente', 'success');
+
+  // Navegar a la ficha recién creada
+  setTimeout(() => {
+    navigate('contenidos');
+    setTimeout(() => openDetalle(idNuevo), 150);
+  }, 400);
+}
+
+// Toggle visibilidad de campos DRM según selección
+function toggleDRMFields() {
+  const req = document.getElementById('alta-drm-requerido').value;
+  const block = document.getElementById('drm-campos-extra');
+  block.style.display = req === 'Sí' ? '' : 'none';
+}
+
+// ===== KPIs DINÁMICOS =====
+function actualizarKPIs() {
+  const activos = contenidos.filter(c => c.estado === 'activo').length;
+  const conDRM = contenidos.filter(c => c.drm === 'Sí').length;
+  const pendientes = contenidos.filter(c => c.validacionDerechos !== 'Sí' || c.validacionAdmin !== 'Sí').length;
+  const bloqueados = contenidos.filter(c => c.estado === 'bloqueado').length;
+
+  const kActivos = document.querySelector('.kpi-activos');
+  const kDRM = document.querySelector('.kpi-drm');
+  const kPend = document.querySelector('.kpi-pendientes');
+  const kBloq = document.querySelector('.kpi-bloqueados');
+
+  if (kActivos) kActivos.textContent = activos;
+  if (kDRM) kDRM.textContent = conDRM;
+  if (kPend) kPend.textContent = pendientes;
+  if (kBloq) kBloq.textContent = bloqueados;
+}
+
+// ===== INIT =====
+// Poblar tablas en memoria antes de que el usuario navegue a ellas
+renderContenidos();
+renderContratos();
+
+navigate('dashboard');
+applyProfileRestrictions();
+actualizarKPIs();
+</script>
+</body>
+</html>
